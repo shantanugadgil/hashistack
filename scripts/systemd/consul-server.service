@@ -1,0 +1,22 @@
+[Unit]
+Description=Consul by HashiCorp
+Documentation=https://www.consul.io/docs/
+Wants=network-online.target
+After=network.target network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+LimitNOFILE=65536
+EnvironmentFile=-/etc/default/consul
+EnvironmentFile=-/etc/sysconfig/consul
+ExecStart=/usr/sbin/consul "agent" "-config-dir=/etc/consul/"
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartForceExitStatus=0 1
+RestartSec=20
+WorkingDirectory=/
+
+[Install]
+WantedBy=multi-user.target

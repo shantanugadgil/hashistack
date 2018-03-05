@@ -1,0 +1,21 @@
+[Unit]
+Description=Hashi UI by Christian Winther (jippi)
+Documentation=https://github.com/jippi/hashi-ui/blob/master/README.md
+Wants=network-online.target consul.service nomad.service
+After=network.target network-online.target nomad.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+LimitNOFILE=65536
+EnvironmentFile=-/etc/default/hashi-ui
+EnvironmentFile=-/etc/sysconfig/hashi-ui
+ExecStart=/usr/sbin/hashi-ui
+Restart=always
+RestartForceExitStatus=0 1
+RestartSec=20
+WorkingDirectory=/
+
+[Install]
+WantedBy=multi-user.target

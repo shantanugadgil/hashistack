@@ -6,7 +6,10 @@ addresses {
 }
 
 encrypt        = "<output of 'consul keygen' here>"
+
+# if using more than 1 server, rename the node appropriately
 node_name      = "srv1"
+
 datacenter     = "dc1"
 data_dir       = "/var/lib/consul"
 

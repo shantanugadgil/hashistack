@@ -6,7 +6,10 @@ addresses {
 }
 
 encrypt        = "<same_key_as_the_server>"
-node_name      = "client1"
+
+# name the clients appropriately; 'lb1', 'client1', 'client2', etc.
+node_name      = "<name_of_the_client>"
+
 datacenter     = "dc1"
 data_dir       = "/var/lib/consul"
 

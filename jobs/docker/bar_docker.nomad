@@ -1,5 +1,11 @@
 job "bar_docker" {
   datacenters = ["dc1"]
+  type        = "service"
+
+  constraint {
+    attribute = "${node.class}"
+    value     = "worker"
+  }
 
   group "gowebhello" {
     count = 2

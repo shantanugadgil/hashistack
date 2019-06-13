@@ -1,5 +1,7 @@
 datacenter = "dc1"
 data_dir   = "/var/lib/nomad"
+
+# if using more than 1 server, rename the node appropriately
 name       = "srv1"
 
 advertise {

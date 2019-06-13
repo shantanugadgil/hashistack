@@ -10,6 +10,8 @@ advertise {
 
 client {
   enabled           = true
+  
+  # the node class can be 'server', 'worker', 'lb'
   node_class        = "worker"
   network_interface = "eth0"
   servers           = ["<list_of_ips_of_servers>"]

@@ -1,0 +1,1 @@
+# watch "consul members; echo; nomad server members; echo; nomad node status -verbose; echo; nomad job status"

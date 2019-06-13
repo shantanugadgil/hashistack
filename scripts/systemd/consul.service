@@ -10,7 +10,6 @@ User=root
 Group=root
 LimitNOFILE=65536
 EnvironmentFile=-/etc/default/consul
-EnvironmentFile=-/etc/sysconfig/consul
 ExecStart=/usr/sbin/consul "agent" "-config-dir=/etc/consul/"
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=always

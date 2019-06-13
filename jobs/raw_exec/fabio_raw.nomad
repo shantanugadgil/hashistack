@@ -13,7 +13,8 @@ job "fabio_raw" {
       driver = "raw_exec"
 
       artifact {
-        source      = "http://10.20.13.80:8080/www/fabio-1.5.11-go1.11.5-linux_amd64"
+        #source      = "https://github.com/fabiolb/fabio/releases/download/v1.5.11/fabio-1.5.11-go1.11.5-linux_amd64"
+        source      = "http://some_local_web_server/fabio-1.5.11-go1.11.5-linux_amd64"
         mode        = "file"
         destination = "local/fabio"
       }

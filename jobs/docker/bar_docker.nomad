@@ -9,7 +9,6 @@ job "bar_docker" {
 
       config {
         image = "udhos/web-scratch:0.7.1"
-        #image = "shantanug/gowebhello:2"
         port_map {
           http = 8080
         }

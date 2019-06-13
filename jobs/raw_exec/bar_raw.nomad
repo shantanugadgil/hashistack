@@ -15,7 +15,7 @@ job "bar_raw" {
 
       artifact {
         #source = "https://github.com/udhos/gowebhello/releases/download/v0.6/gowebhello_linux_amd64"
-        source      = "http://10.20.13.80:8080/www/gowebhello_linux_amd64"
+        source      = "http://some_local_web_server/gowebhello_linux_amd64"
         mode        = "file"
         destination = "local/gowebhello"
       }

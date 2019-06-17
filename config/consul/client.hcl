@@ -1,3 +1,6 @@
+# 'eth0' should be your public interface
+# for Vagrant based setups, you may need to replace "eth0" with "eth1"
+
 bind_addr      = "0.0.0.0"
 advertise_addr = "{{ GetInterfaceIP \"eth0\" }}"
 

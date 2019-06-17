@@ -1,3 +1,6 @@
+# 'eth0' should be your public interface
+# for Vagrant based setups, you may need to replace "eth0" with "eth1"
+
 bind_addr      = "0.0.0.0"
 advertise_addr = "{{ GetInterfaceIP \"eth0\" }}"
 
@@ -21,4 +24,4 @@ ui                      = true
 server           = true
 bootstrap_expect = 1
 
-retry_join = ["<ip_of_srv1_eth0_here>"]
+retry_join = ["<public_ip_of_srv1_here>"]

@@ -1,3 +1,6 @@
+# 'eth0' should be your public interface
+# for Vagrant based setups, you may need to replace "eth0" with "eth1"
+
 datacenter = "dc1"
 data_dir   = "/var/lib/nomad"
 
@@ -12,10 +15,12 @@ advertise {
 
 server {
   enabled          = true
+
+  # count should be equal to the number of servers
   bootstrap_expect = 1
   encrypt          = "output of 'nomad operator keygen' here"
 
   server_join {
-    retry_join = ["<ip_of_srv1_eth0>"]
+    retry_join = ["<public_ip_of_srv1_here>"]
   }
 }

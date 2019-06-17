@@ -1,0 +1,26 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "shantanug/centos-7-docker"
+  config.vm.box_version = "0.0.1"
+  config.vm.network "public_network", bridge: ["wlp5s0", "enp3s0"]
+  config.vm.provision "install", type: "shell", path: "install.bash"
+
+  config.vm.define "srv1" do |srv1|
+    srv1.vm.hostname = "srv1"
+  end
+
+  config.vm.define "lb1" do |lb1|
+    lb1.vm.hostname = "lb1"
+  end
+
+  config.vm.define "client1" do |client1|
+    client1.vm.hostname = "client1"
+  end
+
+  config.vm.define "client2" do |client2|
+    client2.vm.hostname = "client2"
+  end
+
+  config.vm.define "client3" do |client3|
+    client3.vm.hostname = "client3"
+  end
+end

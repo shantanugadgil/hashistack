@@ -1,26 +1,69 @@
+# Vagrantfile
+
+$install_script = <<-EOT
+#!/bin/bash
+
+yum install -y wget unzip acpid
+
+# install the Consul binary
+wget -nv https://releases.hashicorp.com/consul/1.5.1/consul_1.5.1_linux_amd64.zip -O consul.zip
+unzip -o consul.zip
+sudo chown root:root consul
+sudo mv -fv consul /usr/sbin/
+rm -fv consul.zip
+
+# install the Nomad binary
+wget -nv https://releases.hashicorp.com/nomad/0.9.3/nomad_0.9.3_linux_amd64.zip -O nomad.zip
+unzip -o nomad.zip
+sudo chown root:root nomad
+sudo mv -fv nomad /usr/sbin/
+rm -fv nomad.zip
+
+# install Consul's service file
+wget -nv https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O consul.service
+sudo chown root:root consul.service
+sudo mv -fv consul.service /etc/systemd/system/consul.service
+
+# install Nomad's service file
+wget -nv https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O nomad.service
+sudo chown root:root nomad.service
+sudo mv -fv nomad.service /etc/systemd/system/nomad.service
+
+sudo systemctl daemon-reload
+EOT
+
 Vagrant.configure("2") do |config|
   config.vm.box = "shantanug/centos-7-docker"
   config.vm.box_version = "0.0.1"
   config.vm.network "public_network", bridge: ["wlp5s0", "enp3s0"]
-  config.vm.provision "install", type: "shell", path: "install.bash"
+  config.vm.provision "shell", inline: $install_script
 
-  config.vm.define "srv1" do |srv1|
-    srv1.vm.hostname = "srv1"
+  1.upto(1) do |num|
+    vmName = "srv#{num}"
+    #vmIP = "192.68.50.1#{num}"
+    config.vm.define vmName do |client|
+      client.vm.hostname = vmName
+    end
   end
 
-  config.vm.define "lb1" do |lb1|
-    lb1.vm.hostname = "lb1"
+  1.upto(1) do |num|
+    vmName = "lb#{num}"
+    #vmIP = "192.68.50.1#{num}"
+    config.vm.define vmName do |client|
+      client.vm.hostname = vmName
+    end
   end
 
-  config.vm.define "client1" do |client1|
-    client1.vm.hostname = "client1"
+  1.upto(2) do |num|
+    vmName = "client#{num}"
+    #vmIP = "192.68.50.1#{num}"
+    config.vm.define vmName do |client|
+      client.vm.hostname = vmName
+    end
   end
 
-  config.vm.define "client2" do |client2|
-    client2.vm.hostname = "client2"
-  end
-
-  config.vm.define "client3" do |client3|
-    client3.vm.hostname = "client3"
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 1024
+    v.cpus = 2
   end
 end

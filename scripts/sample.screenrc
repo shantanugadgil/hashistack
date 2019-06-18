@@ -1,0 +1,49 @@
+# Allow bold colors - necessary for some reason
+attrcolor b ".I"
+
+# Tell screen how to set colors. AB = background, AF=foreground
+termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+
+# Enables use of shift-PgUp and shift-PgDn
+termcapinfo xterm|xterms|xs|rxvt ti@:te@
+
+# Erase background with current bg color
+defbce "on"
+
+# Enable 256 color term
+term xterm-256color
+
+# Cache 30000 lines for scroll back
+defscrollback 30000
+
+hardstatus alwayslastline
+# Very nice tabbed colored hardstatus line
+#hardstatus string '%{= Kd} %{= Kd}%-w%{= Kr}[%{= KW}%n %t%{= Kr}]%{= Kd}%+w %-= %{KG} [%H] %{KW}|%{KY}%101`%{KW}|%D %M %d %Y%{= Kc} %C%A%{-}'
+hardstatus string '%{= Kd}%-w%{= Kr}[%{= KW}%n %t%{= Kr}]%{= Kd}%+w %-= %{KG} [%H]%{KW}|%{KW}|[%c:%s] [%D %M %Y]'
+
+# change command character from ctrl-a to ctrl-b (emacs users may want this)
+#escape ^Bb
+
+# Hide hardstatus: ctrl-a f
+bind f eval "hardstatus ignore"
+# Show hardstatus: ctrl-a F
+bind F eval "hardstatus alwayslastline"
+
+bindkey -k k6 screen
+bindkey -k k7 prev
+bindkey -k k8 next
+
+# Automatically detach on hangup.
+autodetach on                         # default: on
+
+# Don't display the copyright page
+startup_message off                   # default: on
+
+msgwait 0
+altscreen
+
+screen -t bash #vagrant up
+screen -t srv1     bash -c "vagrant up srv1 && vagrant ssh srv1"
+screen -t lb1      bash -c "vagrant up lb1 && vagrant ssh lb1"
+screen -t client1  bash -c "vagrant up client1 && vagrant ssh client1"
+screen -t client2  bash -c "vagrant up client2 && vagrant ssh client2"

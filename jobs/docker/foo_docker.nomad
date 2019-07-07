@@ -11,10 +11,12 @@ job "foo_docker" {
     count = 2
 
     task "gowebhello" {
-      driver = "docker"
+      driver         = "docker"
+      shutdown_delay = "10s"
 
       config {
         image = "udhos/web-scratch:0.7.1"
+
         port_map {
           http = 8080
         }
@@ -23,9 +25,10 @@ job "foo_docker" {
       resources {
         cpu    = 500
         memory = 256
+
         network {
           mbits = 10
-          port "http" {}
+          port  "http"{}
         }
       }
 
@@ -37,6 +40,7 @@ job "foo_docker" {
         name = "foo-docker"
         tags = ["urlprefix-/foo"]
         port = "http"
+
         check {
           name     = "alive"
           type     = "tcp"
@@ -47,4 +51,3 @@ job "foo_docker" {
     }
   }
 }
-

@@ -15,6 +15,7 @@ job "bar_docker" {
 
       config {
         image = "udhos/web-scratch:0.7.1"
+
         port_map {
           http = 8080
         }
@@ -23,9 +24,10 @@ job "bar_docker" {
       resources {
         cpu    = 500
         memory = 256
+
         network {
           mbits = 10
-          port "http" {}
+          port  "http"{}
         }
       }
 
@@ -37,6 +39,7 @@ job "bar_docker" {
         name = "bar-docker"
         tags = ["urlprefix-/bar"]
         port = "http"
+
         check {
           name     = "alive"
           type     = "tcp"
@@ -47,4 +50,3 @@ job "bar_docker" {
     }
   }
 }
-

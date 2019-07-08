@@ -59,8 +59,10 @@ defaults
 frontend http_front
   bind *:80
   stats uri /haproxy?stats
-  stats admin if { src not 127.0.0.1 }
-  default_backend http_back 
+  stats enable
+  stats show-node
+  stats admin if TRUE
+  default_backend http_back
 
 backend http_back
   balance roundrobin

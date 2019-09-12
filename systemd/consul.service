@@ -5,16 +5,21 @@ Wants=network-online.target
 After=network.target network-online.target
 
 [Service]
+EnvironmentFile=-/etc/default/consul
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/sbin/consul "agent" "-config-dir=/etc/consul/"
+Group=root
+KillMode=process
+KillSignal=SIGINT
+LimitNOFILE=65536
+LimitNPROC=infinity
+Restart=on-failure
+RestartSec=5
+StartLimitBurst=3
+StartLimitIntervalSec=10
+TasksMax=infinity
 Type=simple
 User=root
-Group=root
-LimitNOFILE=65536
-EnvironmentFile=-/etc/default/consul
-ExecStart=/usr/sbin/consul "agent" "-config-dir=/etc/consul/"
-ExecReload=/bin/kill -HUP $MAINPID
-Restart=always
-RestartForceExitStatus=0 1
-RestartSec=20
 WorkingDirectory=/
 
 [Install]

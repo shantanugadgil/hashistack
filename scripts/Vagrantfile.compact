@@ -35,13 +35,13 @@ sudo mv -fv nomad.service /etc/systemd/system/nomad.service
 # Consul Server config
 wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/server.hcl -O server.hcl
 sudo chown root:root server.hcl
-sudo mkdir /etc/consul/
+sudo mkdir -p /etc/consul/
 sudo mv -fv server.hcl /etc/consul/
 
 # Nomad Server config
 wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl -O server.hcl
 sudo chown root:root server.hcl
-sudo mkdir /etc/nomad/
+sudo mkdir -p /etc/nomad/
 sudo mv -fv server.hcl /etc/nomad/
 
 EOT1
@@ -84,13 +84,13 @@ sudo mv -fv nomad.service /etc/systemd/system/nomad.service
 # Consul Client
 wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/client.hcl -O client.hcl
 sudo chown root:root client.hcl
-sudo mkdir /etc/consul/
+sudo mkdir -p /etc/consul/
 sudo mv -fv client.hcl /etc/consul/
 
 # Nomad Client
 wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl -O client.hcl
 sudo chown root:root client.hcl
-sudo mkdir /etc/nomad/
+sudo mkdir -p /etc/nomad/
 sudo mv -fv client.hcl /etc/nomad/
 
 EOT2

@@ -27,10 +27,20 @@ wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/
 sudo chown root:root consul.service
 sudo mv -fv consul.service /etc/systemd/system/consul.service
 
+# wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/consul.conf -O consul.conf
+# sudo chown root:root consul.conf
+# sudo mv -fv consul.conf /etc/init/consul.conf
+
 # install Nomad's service file
 wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O nomad.service
 sudo chown root:root nomad.service
 sudo mv -fv nomad.service /etc/systemd/system/nomad.service
+
+# wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/nomad.conf -O nomad.conf
+# sudo chown root:root nomad.conf
+# sudo mv -fv nomad.conf /etc/init/nomad.conf
+# initctl reload-configuration
+# telinit 2
 
 # Consul Server config
 wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/server.hcl -O server.hcl
@@ -76,10 +86,20 @@ wget  https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd
 sudo chown root:root consul.service
 sudo mv -fv consul.service /etc/systemd/system/consul.service
 
+# wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/consul.conf -O consul.conf
+# sudo chown root:root consul.conf
+# sudo mv -fv consul.conf /etc/init/consul.conf
+
 # install Nomad's service file
 wget  https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O nomad.service
 sudo chown root:root nomad.service
 sudo mv -fv nomad.service /etc/systemd/system/nomad.service
+
+# wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/nomad.conf -O nomad.conf
+# sudo chown root:root nomad.conf
+# sudo mv -fv nomad.conf /etc/init/nomad.conf
+# initctl reload-configuration
+# telinit 2
 
 # Consul Client
 wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/client.hcl -O client.hcl

@@ -1,0 +1,127 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+$install_server = <<-EOT1
+#!/bin/bash
+
+sudo yum -y install wget zip unzip acpid net-tools bind-utils
+
+# install the Consul binary
+wget https://releases.hashicorp.com/consul/1.6.1/consul_1.6.1_linux_amd64.zip -O consul.zip
+unzip -o consul.zip
+sudo chown root:root consul
+sudo mv -fv consul /usr/sbin/
+rm -fv consul.zip
+
+# install the Nomad binary
+wget  https://releases.hashicorp.com/nomad/0.10.0-beta1/nomad_0.10.0-beta1_linux_amd64.zip -O nomad.zip
+unzip -o nomad.zip
+sudo chown root:root nomad
+sudo mv -fv nomad /usr/sbin/
+rm -fv nomad.zip
+
+# install Consul's service file
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O consul.service
+sudo chown root:root consul.service
+sudo mv -fv consul.service /etc/systemd/system/consul.service
+
+# install Nomad's service file
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O nomad.service
+sudo chown root:root nomad.service
+sudo mv -fv nomad.service /etc/systemd/system/nomad.service
+
+# Consul Server config
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/server.hcl -O server.hcl
+sudo chown root:root server.hcl
+sudo mkdir /etc/consul/
+sudo mv -fv server.hcl /etc/consul/
+
+# Nomad Server config
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl -O server.hcl
+sudo chown root:root server.hcl
+sudo mkdir /etc/nomad/
+sudo mv -fv server.hcl /etc/nomad/
+
+EOT1
+
+$install_client = <<-EOT2
+#!/bin/bash
+
+sudo yum -y install wget unzip acpid net-tools bind-utils
+
+# install the Consul binary
+wget  https://releases.hashicorp.com/consul/1.6.1/consul_1.6.1_linux_amd64.zip -O consul.zip
+unzip -o consul.zip
+sudo chown root:root consul
+sudo mv -fv consul /usr/sbin/
+rm -fv consul.zip
+
+# install the Nomad binary
+wget  https://releases.hashicorp.com/nomad/0.10.0-beta1/nomad_0.10.0-beta1_linux_amd64.zip -O nomad.zip
+unzip -o nomad.zip
+sudo chown root:root nomad
+sudo mv -fv nomad /usr/sbin/
+rm -fv nomad.zip
+
+# CNI plugins
+wget https://github.com/containernetworking/plugins/releases/download/v0.8.2/cni-plugins-linux-amd64-v0.8.2.tgz -O cni-plugins.tgz
+sudo mkdir -p /opt/cni/bin
+sudo tar -C /opt/cni/bin -xzf cni-plugins.tgz
+rm -fv cni-plugins.tgz
+
+# install Consul's service file
+wget  https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O consul.service
+sudo chown root:root consul.service
+sudo mv -fv consul.service /etc/systemd/system/consul.service
+
+# install Nomad's service file
+wget  https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O nomad.service
+sudo chown root:root nomad.service
+sudo mv -fv nomad.service /etc/systemd/system/nomad.service
+
+# Consul Client
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/client.hcl -O client.hcl
+sudo chown root:root client.hcl
+sudo mkdir /etc/consul/
+sudo mv -fv client.hcl /etc/consul/
+
+# Nomad Client
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl -O client.hcl
+sudo chown root:root client.hcl
+sudo mkdir /etc/nomad/
+sudo mv -fv client.hcl /etc/nomad/
+
+EOT2
+
+cluster = {
+  "zsrv1" =>    { :script => $install_server, :ip => "192.168.33.10", :cpus => 2, :mem => 2048 },
+  "zlb1" =>     { :script => $install_client, :ip => "192.168.33.10", :cpus => 2, :mem => 2048 },
+  "zclient1" => { :script => $install_client, :ip => "192.168.33.10", :cpus => 2, :mem => 2048 },
+  "zclient2" => { :script => $install_client, :ip => "192.168.33.10", :cpus => 2, :mem => 2048 },
+}
+ 
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  cluster.each_with_index do |(hostname, info), index|
+
+    config.vm.define hostname do |cfg|
+      cfg.vm.provider :virtualbox do |vb, override|
+  
+        config.vm.box = "shantanug/centos-7-docker"
+        config.vm.box_version = "0.0.1"
+
+        override.vm.provision "shell", inline: "#{info[:script]}"
+        #override.vm.network :private_network, ip: "#{info[:ip]}"
+        # eth1
+        override.vm.network "public_network", bridge: ["Qualcomm", "wlp5s0", "enp3s0"]
+
+        override.vm.hostname = hostname
+
+        vb.name = hostname
+        vb.customize ["modifyvm", :id, "--memory", info[:mem], "--cpus", info[:cpus], "--hwvirtex", "on"]
+      end # end provider
+    end # end config
+  end # end cluster
+end

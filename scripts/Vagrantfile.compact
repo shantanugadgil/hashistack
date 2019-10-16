@@ -83,6 +83,7 @@ sudo chown root:root hashi-ui.service
 sudo mv -fv hashi-ui.service /etc/systemd/system/hashi-ui.service
 
 sudo systemctl daemon-reload
+sudo systemctl enable consul nomad
 sudo systemctl restart consul nomad
 
 EOT1
@@ -144,6 +145,9 @@ curl -L -o cni-plugins.tgz https://github.com/containernetworking/plugins/releas
 sudo mkdir -p /opt/cni/bin
 sudo tar -C /opt/cni/bin -xzf cni-plugins.tgz
 rm -fv cni-plugins.tgz
+
+sudo systemctl daemon-reload
+sudo systemctl enable consul nomad
 
 EOT2
 

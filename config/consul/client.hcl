@@ -26,7 +26,7 @@ raft_protocol = 3
 encrypt = "<same_key_as_the_server>"
 
 # name the clients appropriately; 'lb1', 'client1', 'client2', etc.
-node_name = "<name_of_the_client>"
+node_name = "@@NODE_NAME@@"
 
 datacenter = "dc1"
 

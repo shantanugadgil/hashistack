@@ -23,7 +23,7 @@ protocol = 3
 
 raft_protocol = 3
 
-encrypt = "<output of 'consul keygen' here>"
+encrypt = "@@CONSUL_KEY@@"
 
 # if using more than 1 server, rename the node appropriately
 node_name = "srv1"
@@ -44,4 +44,4 @@ server = true
 
 bootstrap_expect = 1
 
-retry_join = ["<public_ip_of_srv1_here>"]
+retry_join = ["@@SRV_IP_ADDRESS@@"]

@@ -27,9 +27,9 @@ server {
 
   # count should be equal to the number of servers
   bootstrap_expect = 1
-  encrypt          = "output of 'nomad operator keygen' here"
+  encrypt          = "@@NOMAD_KEY@@"
 
   server_join {
-    retry_join = ["<public_ip_of_srv1_here>"]
+    retry_join = ["@@SRV_IP_ADDRESS@@"]
   }
 }

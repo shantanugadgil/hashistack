@@ -9,7 +9,7 @@ data_dir = "/var/lib/nomad"
 
 # name the client appropriately; 'lb1', 'client1', 'client2', etc.
 # based on the 'node_class'
-name = "<name_of_client_here>"
+name = "@@NODE_NAME@@"
 
 disable_update_check = true
 

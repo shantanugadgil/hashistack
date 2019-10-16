@@ -5,16 +5,21 @@ Wants=network-online.target consul.service nomad.service
 After=network.target network-online.target nomad.service
 
 [Service]
+EnvironmentFile=-/etc/default/hashi-ui
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/sbin/hashi-ui
+Group=root
+KillMode=process
+KillSignal=SIGINT
+LimitNOFILE=65536
+LimitNPROC=infinity
+Restart=on-failure
+RestartSec=5
+StartLimitBurst=3
+StartLimitIntervalSec=10
+TasksMax=infinity
 Type=simple
 User=root
-Group=root
-LimitNOFILE=65536
-EnvironmentFile=-/etc/default/hashi-ui
-EnvironmentFile=-/etc/sysconfig/hashi-ui
-ExecStart=/usr/sbin/hashi-ui
-Restart=always
-RestartForceExitStatus=0 1
-RestartSec=20
 WorkingDirectory=/
 
 [Install]

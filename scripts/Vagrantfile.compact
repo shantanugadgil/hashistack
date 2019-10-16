@@ -8,51 +8,82 @@ $install_server = <<-EOT1
 
 sudo yum -y install wget zip unzip acpid net-tools bind-utils
 
-# install the Consul binary
-wget https://releases.hashicorp.com/consul/1.6.1/consul_1.6.1_linux_amd64.zip -O consul.zip
+### Consul
+# binary
+curl -L -o consul.zip https://releases.hashicorp.com/consul/1.6.1/consul_1.6.1_linux_amd64.zip
 unzip -o consul.zip
 sudo chown root:root consul
 sudo mv -fv consul /usr/sbin/
 rm -fv consul.zip
 
-# install the Nomad binary
-wget  https://releases.hashicorp.com/nomad/0.10.0-beta1/nomad_0.10.0-beta1_linux_amd64.zip -O nomad.zip
+# server config
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/server.hcl -O server.hcl
+sudo chown root:root server.hcl
+sudo mkdir /etc/consul/
+sudo mv -fv server.hcl /etc/consul/
+
+# service file
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O consul.service
+sudo chown root:root consul.service
+sudo mv -fv consul.service /etc/systemd/system/consul.service
+
+### update config
+set -x
+node_name=$(hostname)
+consul_key=$(consul keygen)
+consul_address=$(ip -o -4 addr list eth1 | head -n1 | awk '{print $4}' | cut -d/ -f1)
+
+sed -i "s/eth0/eth1/g" /etc/consul/server.hcl
+
+sed -i "s/@@NODE_NAME@@/${node_name}/g" /etc/consul/server.hcl
+
+sed -i "s|@@CONSUL_KEY@@|${consul_key}|g" /etc/consul/server.hcl
+
+sed -i "s/@@SRV_IP_ADDRESS@@/${consul_address}/g" /etc/consul/server.hcl
+
+set +x
+
+### Nomad
+# nomad binary
+curl -L -o nomad.zip https://releases.hashicorp.com/nomad/0.10.0-rc1/nomad_0.10.0-rc1_linux_amd64.zip
 unzip -o nomad.zip
 sudo chown root:root nomad
 sudo mv -fv nomad /usr/sbin/
 rm -fv nomad.zip
 
-# install Consul's service file
-wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O consul.service
-sudo chown root:root consul.service
-sudo mv -fv consul.service /etc/systemd/system/consul.service
+# nomad server config
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl -O server.hcl
+sudo chown root:root server.hcl
+sudo mkdir /etc/nomad/
+sudo mv -fv server.hcl /etc/nomad/
 
-# wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/consul.conf -O consul.conf
-# sudo chown root:root consul.conf
-# sudo mv -fv consul.conf /etc/init/consul.conf
-
-# install Nomad's service file
+# nomad service file
 wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O nomad.service
 sudo chown root:root nomad.service
 sudo mv -fv nomad.service /etc/systemd/system/nomad.service
 
-# wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/nomad.conf -O nomad.conf
-# sudo chown root:root nomad.conf
-# sudo mv -fv nomad.conf /etc/init/nomad.conf
-# initctl reload-configuration
-# telinit 2
+### update nomad config
+nomad_key=$(nomad operator keygen)
+nomad_address=$(ip -o -4 addr list eth1 | head -n1 | awk '{print $4}' | cut -d/ -f1)
 
-# Consul Server config
-wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/server.hcl -O server.hcl
-sudo chown root:root server.hcl
-sudo mkdir -p /etc/consul/
-sudo mv -fv server.hcl /etc/consul/
+sed -i "s/eth0/eth1/g" /etc/nomad/server.hcl
+sed -i "s|@@NOMAD_KEY@@|${nomad_key}|g" /etc/nomad/server.hcl
+sed -i "s/@@SRV_IP_ADDRESS@@/${nomad_address}/g" /etc/nomad/server.hcl
+sed -i "s/@@NODE_NAME@@/${node_name}/g" /etc/nomad/server.hcl
 
-# Nomad Server config
-wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl -O server.hcl
-sudo chown root:root server.hcl
-sudo mkdir -p /etc/nomad/
-sudo mv -fv server.hcl /etc/nomad/
+### Hashi-UI
+# binary
+curl -L -o hashi-ui https://github.com/jippi/hashi-ui/releases/download/v1.1.2/hashi-ui-linux-amd64
+sudo chown root:root hashi-ui
+sudo mv -fv hashi-ui /usr/sbin/
+
+# service file
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/hashi-ui.service -O hashi-ui.service
+sudo chown root:root hashi-ui.service
+sudo mv -fv hashi-ui.service /etc/systemd/system/hashi-ui.service
+
+sudo systemctl daemon-reload
+sudo systemctl restart consul nomad
 
 EOT1
 
@@ -61,57 +92,58 @@ $install_client = <<-EOT2
 
 sudo yum -y install wget unzip acpid net-tools bind-utils
 
-# install the Consul binary
-wget  https://releases.hashicorp.com/consul/1.6.1/consul_1.6.1_linux_amd64.zip -O consul.zip
+### Consul ###
+# binary
+curl -L -o consul.zip https://releases.hashicorp.com/consul/1.6.1/consul_1.6.1_linux_amd64.zip
 unzip -o consul.zip
 sudo chown root:root consul
 sudo mv -fv consul /usr/sbin/
 rm -fv consul.zip
 
-# install the Nomad binary
-wget  https://releases.hashicorp.com/nomad/0.10.0-beta1/nomad_0.10.0-beta1_linux_amd64.zip -O nomad.zip
+# client config
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/client.hcl -O client.hcl
+sudo chown root:root client.hcl
+sudo mkdir /etc/consul/
+sudo mv -fv client.hcl /etc/consul/
+
+# service file
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O consul.service
+sudo chown root:root consul.service
+sudo mv -fv consul.service /etc/systemd/system/consul.service
+
+# update consul client config
+node_name=$(hostname)
+sed -i "s/eth0/eth1/g" /etc/consul/client.hcl
+sed -i "s/@@NODE_NAME@@/${node_name}/g" /etc/consul/client.hcl
+
+### Nomad ###
+# binary
+curl -L -o nomad.zip https://releases.hashicorp.com/nomad/0.10.0-rc1/nomad_0.10.0-rc1_linux_amd64.zip
 unzip -o nomad.zip
 sudo chown root:root nomad
 sudo mv -fv nomad /usr/sbin/
 rm -fv nomad.zip
 
-# CNI plugins
-wget https://github.com/containernetworking/plugins/releases/download/v0.8.2/cni-plugins-linux-amd64-v0.8.2.tgz -O cni-plugins.tgz
-sudo mkdir -p /opt/cni/bin
-sudo tar -C /opt/cni/bin -xzf cni-plugins.tgz
-rm -fv cni-plugins.tgz
+# client config
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl -O client.hcl
+sudo chown root:root client.hcl
+sudo mkdir /etc/nomad/
+sudo mv -fv client.hcl /etc/nomad/
 
-# install Consul's service file
-wget  https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O consul.service
-sudo chown root:root consul.service
-sudo mv -fv consul.service /etc/systemd/system/consul.service
-
-# wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/consul.conf -O consul.conf
-# sudo chown root:root consul.conf
-# sudo mv -fv consul.conf /etc/init/consul.conf
-
-# install Nomad's service file
-wget  https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O nomad.service
+# service file
+wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O nomad.service
 sudo chown root:root nomad.service
 sudo mv -fv nomad.service /etc/systemd/system/nomad.service
 
-# wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/nomad.conf -O nomad.conf
-# sudo chown root:root nomad.conf
-# sudo mv -fv nomad.conf /etc/init/nomad.conf
-# initctl reload-configuration
-# telinit 2
+### update nomad client config
+sed -i "s/eth0/eth1/g" /etc/nomad/client.hcl
+sed -i "s/@@NODE_NAME@@/${node_name}/g" /etc/nomad/client.hcl
 
-# Consul Client
-wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/client.hcl -O client.hcl
-sudo chown root:root client.hcl
-sudo mkdir -p /etc/consul/
-sudo mv -fv client.hcl /etc/consul/
-
-# Nomad Client
-wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl -O client.hcl
-sudo chown root:root client.hcl
-sudo mkdir -p /etc/nomad/
-sudo mv -fv client.hcl /etc/nomad/
+### CNI Plugins
+curl -L -o cni-plugins.tgz https://github.com/containernetworking/plugins/releases/download/v0.8.2/cni-plugins-linux-amd64-v0.8.2.tgz
+sudo mkdir -p /opt/cni/bin
+sudo tar -C /opt/cni/bin -xzf cni-plugins.tgz
+rm -fv cni-plugins.tgz
 
 EOT2
 
@@ -130,7 +162,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       cfg.vm.provider :virtualbox do |vb, override|
   
         config.vm.box = "shantanug/centos-7-docker"
-        config.vm.box_version = "0.0.1"
+        #config.vm.box_version = "0.0.2"
 
         override.vm.provision "shell", inline: "#{info[:script]}"
         #override.vm.network :private_network, ip: "#{info[:ip]}"

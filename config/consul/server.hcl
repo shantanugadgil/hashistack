@@ -26,7 +26,7 @@ raft_protocol = 3
 encrypt = "@@CONSUL_KEY@@"
 
 # if using more than 1 server, rename the node appropriately
-node_name = "srv1"
+node_name = "@@NODE_NAME@@"
 
 datacenter = "dc1"
 

@@ -28,7 +28,7 @@ client {
 
   # the node class can be 'worker', 'lb'
   # NOTE: change the node 'name' (above) as per the 'node_class'
-  node_class = "<class_of_the_node_here>"
+  node_class = "@@NODE_CLASS@@"
 
   network_interface = "eth0"
   servers           = ["@@SRV_IP_ADDRESS@@"]

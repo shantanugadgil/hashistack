@@ -6,11 +6,14 @@ VAGRANTFILE_API_VERSION = "2"
 $install_server = <<-EOT1
 #!/bin/bash
 
+CONSUL_VERSION="1.6.1"
+CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
+
 sudo yum -y install wget zip unzip acpid net-tools bind-utils
 
 ### Consul
 # binary
-curl -L -o consul.zip https://releases.hashicorp.com/consul/1.6.1/consul_1.6.1_linux_amd64.zip
+curl -L -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
 unzip -o consul.zip
 sudo chown root:root consul
 sudo mv -fv consul /usr/sbin/
@@ -30,22 +33,25 @@ sudo mv -fv consul.service /etc/systemd/system/consul.service
 ### update config
 set -x
 node_name=$(hostname)
-consul_key=$(consul keygen)
+
 consul_address=$(ip -o -4 addr list eth1 | head -n1 | awk '{print $4}' | cut -d/ -f1)
 
 sed -i "s/eth0/eth1/g" /etc/consul/server.hcl
 
 sed -i "s/@@NODE_NAME@@/${node_name}/g" /etc/consul/server.hcl
 
-sed -i "s|@@CONSUL_KEY@@|${consul_key}|g" /etc/consul/server.hcl
+sed -i "s|@@CONSUL_KEY@@|${CONSUL_KEY}|g" /etc/consul/server.hcl
 
 sed -i "s/@@SRV_IP_ADDRESS@@/${consul_address}/g" /etc/consul/server.hcl
 
 set +x
 
 ### Nomad
+NOMAD_VERSION="0.10.0"
+NOMAD_KEY="dynMLUQfEE0D4VqryVUPFg=="
+
 # nomad binary
-curl -L -o nomad.zip https://releases.hashicorp.com/nomad/0.10.0-rc1/nomad_0.10.0-rc1_linux_amd64.zip
+curl -L -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
 unzip -o nomad.zip
 sudo chown root:root nomad
 sudo mv -fv nomad /usr/sbin/
@@ -63,11 +69,10 @@ sudo chown root:root nomad.service
 sudo mv -fv nomad.service /etc/systemd/system/nomad.service
 
 ### update nomad config
-nomad_key=$(nomad operator keygen)
 nomad_address=$(ip -o -4 addr list eth1 | head -n1 | awk '{print $4}' | cut -d/ -f1)
 
 sed -i "s/eth0/eth1/g" /etc/nomad/server.hcl
-sed -i "s|@@NOMAD_KEY@@|${nomad_key}|g" /etc/nomad/server.hcl
+sed -i "s|@@NOMAD_KEY@@|${NOMAD_KEY}|g" /etc/nomad/server.hcl
 sed -i "s/@@SRV_IP_ADDRESS@@/${nomad_address}/g" /etc/nomad/server.hcl
 sed -i "s/@@NODE_NAME@@/${node_name}/g" /etc/nomad/server.hcl
 
@@ -91,11 +96,14 @@ EOT1
 $install_client = <<-EOT2
 #!/bin/bash
 
+CONSUL_VERSION="1.6.1"
+CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
+
 sudo yum -y install wget unzip acpid net-tools bind-utils
 
 ### Consul ###
 # binary
-curl -L -o consul.zip https://releases.hashicorp.com/consul/1.6.1/consul_1.6.1_linux_amd64.zip
+curl -L -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
 unzip -o consul.zip
 sudo chown root:root consul
 sudo mv -fv consul /usr/sbin/
@@ -114,12 +122,18 @@ sudo mv -fv consul.service /etc/systemd/system/consul.service
 
 # update consul client config
 node_name=$(hostname)
+
 sed -i "s/eth0/eth1/g" /etc/consul/client.hcl
+
 sed -i "s/@@NODE_NAME@@/${node_name}/g" /etc/consul/client.hcl
 
+sed -i "s|@@CONSUL_KEY@@|${CONSUL_KEY}|g" /etc/consul/client.hcl
+
 ### Nomad ###
+NOMAD_VERSION="0.10.0"
+
 # binary
-curl -L -o nomad.zip https://releases.hashicorp.com/nomad/0.10.0-rc1/nomad_0.10.0-rc1_linux_amd64.zip
+curl -L -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
 unzip -o nomad.zip
 sudo chown root:root nomad
 sudo mv -fv nomad /usr/sbin/

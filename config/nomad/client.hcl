@@ -31,7 +31,7 @@ client {
   node_class = "<class_of_the_node_here>"
 
   network_interface = "eth0"
-  servers           = ["<list_of_ips_of_servers>"]
+  servers           = ["@@SRV_IP_ADDRESS@@"]
 }
 
 plugin "raw_exec" {

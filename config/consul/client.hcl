@@ -23,7 +23,7 @@ protocol = 3
 
 raft_protocol = 3
 
-encrypt = "<same_key_as_the_server>"
+encrypt = "@@CONSUL_KEY@@"
 
 # name the clients appropriately; 'lb1', 'client1', 'client2', etc.
 node_name = "@@NODE_NAME@@"
@@ -42,4 +42,4 @@ ui = true
 
 server = false
 
-retry_join = ["<ip_address_of_any_one_server>"]
+retry_join = ["@@SRV_IP_ADDRESS@@"]

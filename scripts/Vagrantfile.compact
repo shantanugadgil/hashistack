@@ -71,7 +71,7 @@ install_nomad ()
   sudo chown root:root nomad.service
   sudo mv -fv nomad.service /etc/systemd/system/nomad.service
 
-
+  return 0
 }
 
 configure_nomad_server ()
@@ -89,6 +89,8 @@ configure_nomad_server ()
   sed -i "s|@@NOMAD_KEY@@|${NOMAD_KEY}|g" /etc/nomad/server.hcl
   sed -i "s/@@SRV_IP_ADDRESS@@/${nomad_address}/g" /etc/nomad/server.hcl
   sed -i "s/@@NODE_NAME@@/${node_name}/g" /etc/nomad/server.hcl
+
+  return 0
 }
 
 install_hashi_ui ()
@@ -102,6 +104,8 @@ install_hashi_ui ()
   wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/hashi-ui.service -O hashi-ui.service
   sudo chown root:root hashi-ui.service
   sudo mv -fv hashi-ui.service /etc/systemd/system/hashi-ui.service
+
+  return 0
 }
 
 # script starts here
@@ -251,8 +255,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # eth1
         override.vm.network "private_network", virtualbox__intnet: "clusterz", ip: "#{info[:ip]}"
 
-        # eth2
-        #override.vm.network "public_network", bridge: ["Qualcomm", "wlp5s0", "enp3s0"]
+        if "#{info[:class]}" == "lb"
+          # eth2
+          override.vm.network "public_network", bridge: ["Qualcomm", "wlp5s0", "enp3s0"]
+        end
 
         override.vm.hostname = hostname
 

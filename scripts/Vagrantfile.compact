@@ -216,6 +216,8 @@ install_cni_plugins ()
   sudo mkdir -p /opt/cni/bin
   sudo tar -C /opt/cni/bin -xzf cni-plugins.tgz
   rm -fv cni-plugins.tgz
+
+  return 0
 }
 
 # script starts here

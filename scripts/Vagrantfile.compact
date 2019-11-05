@@ -56,7 +56,7 @@ configure_consul_server ()
 
 install_nomad ()
 {
-  NOMAD_VERSION="0.10.0"
+  NOMAD_VERSION="0.10.1"
   NOMAD_KEY="dynMLUQfEE0D4VqryVUPFg=="
 
   # binary

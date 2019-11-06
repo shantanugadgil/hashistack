@@ -171,7 +171,7 @@ configure_consul_client ()
 
 install_nomad ()
 {
-  NOMAD_VERSION="0.10.0"
+  NOMAD_VERSION="0.10.1"
 
   # binary
   curl -L -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip

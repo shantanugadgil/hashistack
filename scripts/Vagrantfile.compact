@@ -19,6 +19,7 @@ install_consul ()
   curl -L -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
   unzip -o consul.zip
   sudo chown root:root consul
+  sudo chmod 0755 consul
   sudo mv -fv consul /usr/sbin/
   rm -fv consul.zip
 
@@ -63,6 +64,7 @@ install_nomad ()
   curl -L -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
   unzip -o nomad.zip
   sudo chown root:root nomad
+  sudo chmod 0755 nomad
   sudo mv -fv nomad /usr/sbin/
   rm -fv nomad.zip
 
@@ -98,6 +100,7 @@ install_hashi_ui ()
   # binary
   curl -L -o hashi-ui https://github.com/jippi/hashi-ui/releases/download/v1.1.2/hashi-ui-linux-amd64
   sudo chown root:root hashi-ui
+  sudo chmod 0755 hashi-ui
   sudo mv -fv hashi-ui /usr/sbin/
 
   # service file

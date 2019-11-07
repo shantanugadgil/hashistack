@@ -7,7 +7,7 @@ After=network.target network-online.target nomad.service
 [Service]
 EnvironmentFile=-/etc/default/hashi-ui
 ExecReload=/bin/kill -HUP $MAINPID
-ExecStart=/usr/sbin/hashi-ui
+ExecStart=/usr/sbin/hashi-ui --consul-enable --nomad-enable
 Group=root
 KillMode=process
 KillSignal=SIGINT

@@ -9,6 +9,10 @@ addresses {
   http = "0.0.0.0"
 }
 
+connect {
+  enabled = true
+}
+
 disable_host_node_id = true
 
 disable_update_check = true

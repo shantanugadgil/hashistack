@@ -9,6 +9,10 @@ addresses {
   http = "127.0.0.1 {{ GetInterfaceIP \"eth0\" }}"
 }
 
+ports {
+  grpc = 8502
+}
+
 disable_host_node_id = true
 
 disable_update_check = true

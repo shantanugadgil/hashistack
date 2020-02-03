@@ -11,6 +11,7 @@ addresses {
 
 ports {
   grpc = 8502
+  dns  = -1
 }
 
 disable_host_node_id = true

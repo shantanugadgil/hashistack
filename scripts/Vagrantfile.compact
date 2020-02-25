@@ -12,7 +12,7 @@ sudo yum -y install wget zip unzip acpid net-tools bind-utils
 
 install_consul ()
 {
-  CONSUL_VERSION="1.6.2"
+  CONSUL_VERSION="1.7.1"
   CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
 
   # binary
@@ -57,7 +57,7 @@ configure_consul_server ()
 
 install_nomad ()
 {
-  NOMAD_VERSION="0.10.2"
+  NOMAD_VERSION="0.10.4"
   NOMAD_KEY="dynMLUQfEE0D4VqryVUPFg=="
 
   # binary
@@ -135,7 +135,7 @@ sudo yum -y install wget unzip acpid net-tools bind-utils
 
 install_consul ()
 {
-  CONSUL_VERSION="1.6.2"
+  CONSUL_VERSION="1.7.1"
   CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
 
   # binary
@@ -174,7 +174,7 @@ configure_consul_client ()
 
 install_nomad ()
 {
-  NOMAD_VERSION="0.10.2"
+  NOMAD_VERSION="0.10.4"
 
   # binary
   curl -L -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
@@ -212,7 +212,7 @@ configure_nomad_client ()
 
 install_cni_plugins ()
 {
-  CNI_PLUGINS_VERSION="0.8.2"
+  CNI_PLUGINS_VERSION="0.8.5"
 
   # binary installation
   curl -L -o cni-plugins.tgz https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS_VERSION}/cni-plugins-linux-amd64-v${CNI_PLUGINS_VERSION}.tgz

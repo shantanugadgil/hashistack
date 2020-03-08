@@ -7,7 +7,7 @@ set -u
 # create the necessary configuration files/etc
 echo "START: [${ASG_NAME}] instance [${ASG_INDEX}] ..."
 
-echo "${ASG_INDEX}" > /tmp/statefulid
+echo "${ASG_INDEX}" > ${STATEFULID_FILE}
 
 cat > /etc/systemd/system/locker.service <<EOT
 [Unit]

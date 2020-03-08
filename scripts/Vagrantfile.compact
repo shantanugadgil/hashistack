@@ -8,6 +8,8 @@ $install_server = <<-EOT1
 
 set -u
 
+date > /tmp/inside.txt
+
 sudo yum -y install wget zip unzip acpid net-tools bind-utils
 
 install_consul ()
@@ -36,7 +38,7 @@ configure_consul_server ()
   # server config
   wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/server.hcl -O server.hcl
   sudo chown root:root server.hcl
-  sudo mkdir /etc/consul/
+  sudo mkdir -p /etc/consul/
   sudo mv -fv server.hcl /etc/consul/
 
   set -x
@@ -81,7 +83,7 @@ configure_nomad_server ()
   # server config
   wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl -O server.hcl
   sudo chown root:root server.hcl
-  sudo mkdir /etc/nomad/
+  sudo mkdir -p /etc/nomad/
   sudo mv -fv server.hcl /etc/nomad/
 
   # update variables
@@ -97,8 +99,10 @@ configure_nomad_server ()
 
 install_hashi_ui ()
 {
+  HASHIUI_VERSION="1.3.4"
+
   # binary
-  curl -L -o hashi-ui https://github.com/jippi/hashi-ui/releases/download/v1.1.2/hashi-ui-linux-amd64
+  curl -L -o hashi-ui https://github.com/jippi/hashi-ui/releases/download/v${HASHIUI_VERSION}/hashi-ui-linux-amd64
   sudo chown root:root hashi-ui
   sudo chmod 0755 hashi-ui
   sudo mv -fv hashi-ui /usr/sbin/
@@ -124,12 +128,16 @@ sudo systemctl daemon-reload
 sudo systemctl enable consul nomad
 sudo systemctl restart consul nomad
 
+date >> /tmp/inside.txt
+
 EOT1
 
 $install_client = <<-EOT2
 #!/bin/bash
 
 set -u
+
+date > /tmp/inside.txt
 
 sudo yum -y install wget unzip acpid net-tools bind-utils
 
@@ -158,7 +166,7 @@ configure_consul_client ()
   # client config
   wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/client.hcl -O client.hcl
   sudo chown root:root client.hcl
-  sudo mkdir /etc/consul/
+  sudo mkdir -p /etc/consul/
   sudo mv -fv client.hcl /etc/consul/
 
   # update variables
@@ -196,7 +204,7 @@ configure_nomad_client ()
   # client config
   wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl -O client.hcl
   sudo chown root:root client.hcl
-  sudo mkdir /etc/nomad/
+  sudo mkdir -p /etc/nomad/
   sudo mv -fv client.hcl /etc/nomad/
 
   set -x
@@ -237,23 +245,64 @@ sudo systemctl daemon-reload
 sudo systemctl enable consul nomad
 sudo systemctl restart consul nomad
 
+date >> /tmp/inside.txt
+
 EOT2
 
+$install_common_before = <<-EOT3
+#!/bin/bash
+
+set -u
+set -x
+
+date > /tmp/before.txt
+
+sleep 5
+
+date >> /tmp/before.txt
+
+EOT3
+
+$install_common_after = <<-EOT4
+#!/bin/bash
+
+set -u
+set -x
+
+date > /tmp/after.txt
+
+export ASG_NAME="clusterz-1"
+export ASG_COUNT="10"
+
+curl -o wrapper.bash -L https://raw.githubusercontent.com/shantanugadgil/hashistack/master/scripts/stateful/wrapper.bash
+curl -o config.bash -L https://raw.githubusercontent.com/shantanugadgil/hashistack/master/scripts/stateful/config.bash
+
+bash -x wrapper.bash
+
+date >> /tmp/after.txt
+
+EOT4
+
 cluster = {
-  "zsrv1" =>    { :script => $install_server, :ip => "10.11.12.11", :cpus => 2, :mem => 2048, :class => "server" },
-  "zlb1" =>     { :script => $install_client, :ip => "10.11.12.101", :cpus => 2, :mem => 2048, :class => "lb" },
+  "zsrv1" =>    { :script => $install_server, :ip => "10.11.12.11", :cpus => 2, :mem => 1024, :class => "server" },
+  "zlb1" =>     { :script => $install_client, :ip => "10.11.12.101", :cpus => 2, :mem => 1024, :class => "lb" },
   "zclient1" => { :script => $install_client, :ip => "10.11.12.102", :cpus => 2, :mem => 2048, :class => "worker" },
   "zclient2" => { :script => $install_client, :ip => "10.11.12.103", :cpus => 2, :mem => 2048, :class => "worker" },
+  "zclient3" => { :script => $install_client, :ip => "10.11.12.104", :cpus => 2, :mem => 2048, :class => "worker" },
 }
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
+  config.vm.box = "shantanug/centos-7-docker"
+  #config.vm.box_version = "0.0.2"
+
   cluster.each_with_index do |(hostname, info), index|
 
     config.vm.define hostname do |cfg|
-      cfg.vm.provider :virtualbox do |vb, override|
-        config.vm.box = "shantanug/centos-7-docker"
-        #config.vm.box_version = "0.0.2"
+
+      cfg.vm.provider "virtualbox" do |vb, override|
+
+        override.vm.provision :shell, inline: $install_common_before
 
         override.vm.provision "shell", inline: "#{info[:script]}", env: {"SRV_IP" => "#{cluster['zsrv1'][:ip]}", "NODE_CLASS" => "#{info[:class]}"}
 
@@ -272,7 +321,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         vb.name = hostname
         vb.customize ["modifyvm", :id, "--memory", info[:mem], "--cpus", info[:cpus], "--hwvirtex", "on"]
+  
+        if "#{info[:class]}" == "worker"
+          override.vm.provision :shell, inline: $install_common_after
+        end
+
       end # end provider
     end # end config
   end # end cluster
-end
+end # end Vagrant.configure

@@ -23,8 +23,10 @@ done
 delay=$(( $RANDOM % 10 + 3))
 sleep $delay
 
-if [[ -s /etc/stateful_id ]]; then
-	id=$(cat /etc/stateful_id)
+export STATEFULID_FILE="/tmp/statefulid"
+
+if [[ -s ${STATEFULID_FILE} ]]; then
+	id=$(cat ${STATEFULID_FILE})
 
 	echo "Machine seems to be already setup as part of a StatefulSet. ID [$id]."
 	exit 0

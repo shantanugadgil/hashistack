@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -u
+set -x
 
 # this MUST be called AFTER consul and BEFORE nomad
 

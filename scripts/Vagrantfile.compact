@@ -10,7 +10,8 @@ set -u
 
 date > /tmp/inside.txt
 
-sudo yum -y install wget zip unzip acpid net-tools bind-utils
+#sudo yum clean all
+#sudo yum -y install wget zip unzip acpid net-tools bind-utils
 
 install_consul ()
 {
@@ -139,7 +140,8 @@ set -u
 
 date > /tmp/inside.txt
 
-sudo yum -y install wget unzip acpid net-tools bind-utils
+#sudo yum clean all
+#sudo yum -y install wget zip unzip acpid net-tools bind-utils
 
 install_consul ()
 {

@@ -10,12 +10,9 @@ set -u
 
 date > /tmp/inside.txt
 
-#sudo yum clean all
-#sudo yum -y install wget zip unzip acpid net-tools bind-utils
-
 install_consul ()
 {
-  CONSUL_VERSION="1.7.1"
+  CONSUL_VERSION="1.7.2"
   CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
 
   # binary
@@ -140,12 +137,9 @@ set -u
 
 date > /tmp/inside.txt
 
-#sudo yum clean all
-#sudo yum -y install wget zip unzip acpid net-tools bind-utils
-
 install_consul ()
 {
-  CONSUL_VERSION="1.7.1"
+  CONSUL_VERSION="1.7.2"
   CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
 
   # binary
@@ -296,7 +290,7 @@ cluster = {
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "shantanug/centos-7-docker"
-  #config.vm.box_version = "0.0.2"
+  #config.vm.box_version = "0.0.3"
 
   cluster.each_with_index do |(hostname, info), index|
 
@@ -304,7 +298,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       cfg.vm.provider "virtualbox" do |vb, override|
 
-        override.vm.provision :shell, inline: $install_common_before
+        #override.vm.provision :shell, inline: $install_common_before
 
         override.vm.provision "shell", inline: "#{info[:script]}", env: {"SRV_IP" => "#{cluster['zsrv1'][:ip]}", "NODE_CLASS" => "#{info[:class]}"}
 
@@ -318,15 +312,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         override.vm.hostname = hostname
 
+        # TODO: this is a WIP; to avoid downloading the binaries (speedup)
         config.vm.synced_folder "hashicorp/", "/hashicorp",
           owner: "root", group: "root"
 
         vb.name = hostname
         vb.customize ["modifyvm", :id, "--memory", info[:mem], "--cpus", info[:cpus], "--hwvirtex", "on"]
   
-        if "#{info[:class]}" == "worker"
-          override.vm.provision :shell, inline: $install_common_after
-        end
+        #if "#{info[:class]}" == "worker"
+        #  override.vm.provision :shell, inline: $install_common_after
+        #end
 
       end # end provider
     end # end config

@@ -12,6 +12,14 @@ name = "@@NODE_NAME@@"
 
 disable_update_check = true
 
+leave_on_interrupt = true
+
+leave_on_terminate = true
+
+#enable_syslog = true
+
+log_file = "/var/log/nomad.log"
+
 addresses {
   http = "0.0.0.0"
 }
@@ -31,5 +39,6 @@ server {
 
   server_join {
     retry_join = ["@@SRV_IP_ADDRESS@@"]
+    retry_max = 0
   }
 }

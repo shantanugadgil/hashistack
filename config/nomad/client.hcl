@@ -13,6 +13,14 @@ name = "@@NODE_NAME@@"
 
 disable_update_check = true
 
+leave_on_interrupt = true
+
+leave_on_terminate = true
+
+#enable_syslog = true
+
+log_file = "/var/log/nomad.log"
+
 addresses {
   http = "{{ GetInterfaceIP \"eth0\" }}"
 }

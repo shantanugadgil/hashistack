@@ -33,6 +33,7 @@ client {
   network_interface = "eth0"
   server_join {
     retry_join = ["@@SRV_IP_ADDRESS@@"]
+    retry_max  = 0
   }
 }
 

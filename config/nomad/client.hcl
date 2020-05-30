@@ -31,7 +31,9 @@ client {
   node_class = "@@NODE_CLASS@@"
 
   network_interface = "eth0"
-  servers           = ["@@SRV_IP_ADDRESS@@"]
+  server_join {
+    retry_join = ["@@SRV_IP_ADDRESS@@"]
+  }
 }
 
 plugin "raw_exec" {

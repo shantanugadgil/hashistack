@@ -21,6 +21,10 @@ leave_on_terminate = true
 
 log_file = "/var/log/nomad.log"
 
+log_rotate_bytes = 10485760
+
+log_rotate_max_files = 5
+
 addresses {
   http = "{{ GetInterfaceIP \"eth0\" }}"
 }

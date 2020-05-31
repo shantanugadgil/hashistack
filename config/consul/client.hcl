@@ -20,9 +20,15 @@ disable_update_check = true
 
 enable_script_checks = true
 
-enable_syslog = true
+#enable_syslog = true
 
 log_level = "INFO"
+
+log_file = "/var/log/consul.log"
+
+log_rotate_bytes = 10485760
+
+log_rotate_max_files = 5
 
 protocol = 3
 
@@ -48,3 +54,5 @@ ui = true
 server = false
 
 retry_join = ["@@SRV_IP_ADDRESS@@"]
+
+retry_max = 0

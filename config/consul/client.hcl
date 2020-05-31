@@ -45,7 +45,8 @@ data_dir = "/var/lib/consul"
 
 leave_on_terminate = true
 
-skip_leave_on_interrupt = true
+# keep this 'false' for clients
+skip_leave_on_interrupt = false
 
 rejoin_after_leave = true
 

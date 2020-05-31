@@ -44,7 +44,9 @@ data_dir = "/var/lib/consul"
 
 leave_on_terminate = true
 
-skip_leave_on_interrupt = true
+skip_leave_on_interrupt = false
+
+reconnect_timeout = "8h"
 
 rejoin_after_leave = true
 

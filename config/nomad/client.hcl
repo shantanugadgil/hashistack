@@ -54,3 +54,11 @@ plugin "raw_exec" {
     enabled = true
   }
 }
+
+plugin "docker" {
+  config {
+    volumes {
+      enabled = true
+    }
+  }
+}

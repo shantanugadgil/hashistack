@@ -6,14 +6,14 @@ $install_script = <<-EOT
 yum install -y wget unzip acpid
 
 # install the Consul binary
-wget -nv https://releases.hashicorp.com/consul/1.7.3/consul_1.7.3_linux_amd64.zip -O consul.zip
+wget -nv https://releases.hashicorp.com/consul/1.8.5/consul_1.8.5_linux_amd64.zip -O consul.zip
 unzip -o consul.zip
 sudo chown root:root consul
 sudo mv -fv consul /usr/sbin/
 rm -fv consul.zip
 
 # install the Nomad binary
-wget -nv https://releases.hashicorp.com/nomad/0.11.3/nomad_0.11.3_linux_amd64.zip -O nomad.zip
+wget -nv https://releases.hashicorp.com/nomad/0.12.7/nomad_0.12.7_linux_amd64.zip -O nomad.zip
 unzip -o nomad.zip
 sudo chown root:root nomad
 sudo mv -fv nomad /usr/sbin/

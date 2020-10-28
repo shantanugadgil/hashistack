@@ -12,7 +12,7 @@ date > /tmp/inside.txt
 
 install_consul ()
 {
-  CONSUL_VERSION="1.7.3"
+  CONSUL_VERSION="1.8.5"
   CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
 
   # binary
@@ -57,7 +57,7 @@ configure_consul_server ()
 
 install_nomad ()
 {
-  NOMAD_VERSION="0.11.3"
+  NOMAD_VERSION="0.12.7"
   NOMAD_KEY="dynMLUQfEE0D4VqryVUPFg=="
 
   # binary

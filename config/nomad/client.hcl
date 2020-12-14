@@ -42,6 +42,8 @@ client {
   # NOTE: change the node 'name' (above) as per the 'node_class'
   node_class = "@@NODE_CLASS@@"
 
+  #cpu_total_compute = @@CPU_TOTAL_COMPUTE@@
+
   network_interface = "eth0"
   server_join {
     retry_join = ["@@SRV_IP_ADDRESS@@"]

@@ -7,7 +7,7 @@ After=network.target network-online.target
 [Service]
 EnvironmentFile=-/etc/default/consul
 ExecReload=/bin/kill -HUP $MAINPID
-ExecStart=/usr/sbin/consul "agent" "-config-dir=/etc/consul/"
+ExecStart=/usr/sbin/consul "agent" "-config-dir=/etc/consul.d/"
 Group=root
 KillMode=process
 KillSignal=SIGINT

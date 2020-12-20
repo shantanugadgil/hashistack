@@ -43,7 +43,7 @@ sudo systemctl enable locker
 
 # TODO: create the consul and nomad meta files
 
-cat > /etc/consul/meta.hcl <<EOT
+cat > /etc/consul.d/meta.hcl <<EOT
 node_meta {
   "statefulid" = "${ASG_INDEX}"
 }

@@ -7,7 +7,7 @@ After=network.target network-online.target consul.service
 [Service]
 EnvironmentFile=-/etc/default/nomad
 ExecReload=/bin/kill -HUP $MAINPID
-ExecStart=/usr/sbin/nomad "agent" "-config=/etc/nomad/"
+ExecStart=/usr/sbin/nomad "agent" "-config=/etc/nomad.d/"
 Group=root
 KillMode=process
 KillSignal=SIGINT

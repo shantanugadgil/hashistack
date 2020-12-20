@@ -8,13 +8,32 @@ $install_server = <<-EOT1
 
 set -u
 
+CONSUL_VERSION=${CONSUL_VERSION:-"1.9.1"}
+CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
+
+consul_systemd_file="/etc/systemd/system/consul.service"
+
+consul_config_dir="/etc/consul.d"
+consul_server_config="${consul_config_dir}/server.hcl"
+consul_client_config="${consul_config_dir}/client.hcl"
+
+NOMAD_VERSION=${NOMAD_VERSION:-"1.0.1"}
+NOMAD_KEY="R84JM/rVST6LnLx3pQnPAlQkMg5DIVG6ys+bUaHjayA="
+
+nomad_systemd_file="/etc/systemd/system/nomad.service"
+
+nomad_config_dir="/etc/nomad.d"
+nomad_server_config="${nomad_config_dir}/server.hcl"
+nomad_client_config="${nomad_config_dir}/client.hcl"
+
+HASHIUI_VERSION=${HASHIUI_VERSION:-"1.3.8"}
+
+CNI_PLUGINS_VERSION=${CNI_PLUGINS_VERSION:-"0.9.0"}
+
 date > /tmp/inside.txt
 
 install_consul ()
 {
-  CONSUL_VERSION="1.8.5"
-  CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
-
   # binary
   curl -L -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
   unzip -o consul.zip
@@ -24,9 +43,9 @@ install_consul ()
   rm -fv consul.zip
 
   # service file
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O consul.service
-  sudo chown root:root consul.service
-  sudo mv -fv consul.service /etc/systemd/system/consul.service
+  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O ${consul_systemd_file}
+  sudo chown root:root ${consul_systemd_file}
+  sudo chmod 0644 ${consul_systemd_file}
 
   return 0
 }
@@ -34,10 +53,10 @@ install_consul ()
 configure_consul_server ()
 {
   # server config
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/server.hcl -O server.hcl
-  sudo chown root:root server.hcl
-  sudo mkdir -p /etc/consul/
-  sudo mv -fv server.hcl /etc/consul/
+  sudo mkdir -p ${consul_config_dir}
+  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/server.hcl -O ${consul_server_config}
+  sudo chown root:root ${consul_server_config}
+  sudo chmod 0644 ${consul_server_config}
 
   set -x
 
@@ -45,10 +64,10 @@ configure_consul_server ()
   node_name=$(hostname)
   consul_address=$(ip -o -4 addr list eth1 | head -n1 | awk '{print $4}' | cut -d/ -f1)
 
-  sed -i "s/eth0/eth1/g" /etc/consul/server.hcl
-  sed -i "s/@@NODE_NAME@@/${node_name}/g" /etc/consul/server.hcl
-  sed -i "s|@@CONSUL_KEY@@|${CONSUL_KEY}|g" /etc/consul/server.hcl
-  sed -i "s/@@SRV_IP_ADDRESS@@/${consul_address}/g" /etc/consul/server.hcl
+  sed -i "s/eth0/eth1/g"                            ${consul_server_config}
+  sed -i "s/@@NODE_NAME@@/${node_name}/g"           ${consul_server_config}
+  sed -i "s|@@CONSUL_KEY@@|${CONSUL_KEY}|g"         ${consul_server_config}
+  sed -i "s/@@SRV_IP_ADDRESS@@/${consul_address}/g" ${consul_server_config}
 
   set +x
 
@@ -57,9 +76,6 @@ configure_consul_server ()
 
 install_nomad ()
 {
-  NOMAD_VERSION="0.12.7"
-  NOMAD_KEY="dynMLUQfEE0D4VqryVUPFg=="
-
   # binary
   curl -L -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
   unzip -o nomad.zip
@@ -69,9 +85,9 @@ install_nomad ()
   rm -fv nomad.zip
 
   # service file
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O nomad.service
-  sudo chown root:root nomad.service
-  sudo mv -fv nomad.service /etc/systemd/system/nomad.service
+  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O ${nomad_systemd_file}
+  sudo chown root:root ${nomad_systemd_file}
+  sudo chmod 0644      ${nomad_systemd_file}
 
   return 0
 }
@@ -79,26 +95,24 @@ install_nomad ()
 configure_nomad_server ()
 {
   # server config
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl -O server.hcl
-  sudo chown root:root server.hcl
-  sudo mkdir -p /etc/nomad/
-  sudo mv -fv server.hcl /etc/nomad/
-
+  sudo mkdir -p ${nomad_config_dir}
+  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl -O ${nomad_server_config}
+  sudo chown root:root ${nomad_server_config}
+  sudo chmod 0644      ${nomad_server_config}
+  
   # update variables
 
   nomad_address=$(ip -o -4 addr list eth1 | head -n1 | awk '{print $4}' | cut -d/ -f1)
-  sed -i "s/eth0/eth1/g" /etc/nomad/server.hcl
-  sed -i "s|@@NOMAD_KEY@@|${NOMAD_KEY}|g" /etc/nomad/server.hcl
-  sed -i "s/@@SRV_IP_ADDRESS@@/${nomad_address}/g" /etc/nomad/server.hcl
-  sed -i "s/@@NODE_NAME@@/${node_name}/g" /etc/nomad/server.hcl
+  sed -i "s/eth0/eth1/g"                           ${nomad_server_config}
+  sed -i "s|@@NOMAD_KEY@@|${NOMAD_KEY}|g"          ${nomad_server_config}
+  sed -i "s/@@SRV_IP_ADDRESS@@/${nomad_address}/g" ${nomad_server_config}
+  sed -i "s/@@NODE_NAME@@/${node_name}/g"          ${nomad_server_config}
 
   return 0
 }
 
 install_hashi_ui ()
 {
-  HASHIUI_VERSION="1.3.8"
-
   # binary
   curl -L -o hashi-ui https://github.com/jippi/hashi-ui/releases/download/v${HASHIUI_VERSION}/hashi-ui-linux-amd64
   sudo chown root:root hashi-ui
@@ -135,24 +149,40 @@ $install_client = <<-EOT2
 
 set -u
 
+CONSUL_VERSION=${CONSUL_VERSION:-"1.9.1"}
+CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
+
+consul_systemd_file="/etc/systemd/system/consul.service"
+
+consul_config_dir="/etc/consul.d"
+consul_server_config="${consul_config_dir}/server.hcl"
+consul_client_config="${consul_config_dir}/client.hcl"
+
+NOMAD_VERSION=${NOMAD_VERSION:-"1.0.1"}
+NOMAD_KEY="R84JM/rVST6LnLx3pQnPAlQkMg5DIVG6ys+bUaHjayA="
+
+nomad_systemd_file="/etc/systemd/system/nomad.service"
+
+nomad_config_dir="/etc/nomad.d"
+nomad_server_config="${nomad_config_dir}/server.hcl"
+nomad_client_config="${nomad_config_dir}/client.hcl"
+
 date > /tmp/inside.txt
 
 install_consul ()
 {
-  CONSUL_VERSION="1.7.3"
-  CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
-
   # binary
   curl -L -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
   unzip -o consul.zip
   sudo chown root:root consul
+  sudo chmod 0755 consul
   sudo mv -fv consul /usr/sbin/
   rm -fv consul.zip
 
   # service file
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O consul.service
-  sudo chown root:root consul.service
-  sudo mv -fv consul.service /etc/systemd/system/consul.service
+  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O ${consul_systemd_file}
+  sudo chown root:root ${consul_systemd_file}
+  sudo chmod 0644 ${consul_systemd_file}
 
   return 0
 }
@@ -160,37 +190,36 @@ install_consul ()
 configure_consul_client ()
 {
   # client config
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/client.hcl -O client.hcl
-  sudo chown root:root client.hcl
-  sudo mkdir -p /etc/consul/
-  sudo mv -fv client.hcl /etc/consul/
+  sudo mkdir -p ${consul_config_dir}
+  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/client.hcl -O ${consul_client_config}
+  sudo chown root:root ${consul_client_config}
+  sudo chmod 0644      ${consul_client_config}
 
   # update variables
   node_name=$(hostname)
 
-  sed -i "s/eth0/eth1/g" /etc/consul/client.hcl
-  sed -i "s/@@NODE_NAME@@/${node_name}/g" /etc/consul/client.hcl
-  sed -i "s|@@CONSUL_KEY@@|${CONSUL_KEY}|g" /etc/consul/client.hcl
-  sed -i "s|@@SRV_IP_ADDRESS@@|${SRV_IP}|g" /etc/consul/client.hcl
+  sed -i "s/eth0/eth1/g"                    ${consul_client_config}
+  sed -i "s/@@NODE_NAME@@/${node_name}/g"   ${consul_client_config}
+  sed -i "s|@@CONSUL_KEY@@|${CONSUL_KEY}|g" ${consul_client_config}
+  sed -i "s|@@SRV_IP_ADDRESS@@|${SRV_IP}|g" ${consul_client_config}
 
   return 0
 }
 
 install_nomad ()
 {
-  NOMAD_VERSION="0.11.3"
-
   # binary
   curl -L -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
   unzip -o nomad.zip
   sudo chown root:root nomad
+  sudo chmod 0755 nomad
   sudo mv -fv nomad /usr/sbin/
   rm -fv nomad.zip
 
   # service file
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O nomad.service
-  sudo chown root:root nomad.service
-  sudo mv -fv nomad.service /etc/systemd/system/nomad.service
+  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O ${nomad_systemd_file}
+  sudo chown root:root ${nomad_systemd_file}
+  sudo chmod 0644      ${nomad_systemd_file}
 
   return 0
 }
@@ -198,17 +227,17 @@ install_nomad ()
 configure_nomad_client ()
 {
   # client config
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl -O client.hcl
-  sudo chown root:root client.hcl
-  sudo mkdir -p /etc/nomad/
-  sudo mv -fv client.hcl /etc/nomad/
-
+  sudo mkdir -p ${nomad_config_dir}
+  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl -O ${nomad_client_config}
+  sudo chown root:root ${nomad_client_config}
+  sudo chmod 0644      ${nomad_client_config}
+  
   set -x
   # update variables
-  sed -i "s/eth0/eth1/g" /etc/nomad/client.hcl
-  sed -i "s/@@NODE_NAME@@/${node_name}/g" /etc/nomad/client.hcl
-  sed -i "s/@@NODE_CLASS@@/${NODE_CLASS}/g" /etc/nomad/client.hcl
-  sed -i "s|@@SRV_IP_ADDRESS@@|${SRV_IP}|g" /etc/nomad/client.hcl
+  sed -i "s/eth0/eth1/g"                    ${nomad_client_config}
+  sed -i "s/@@NODE_NAME@@/${node_name}/g"   ${nomad_client_config}
+  sed -i "s/@@NODE_CLASS@@/${NODE_CLASS}/g" ${nomad_client_config}
+  sed -i "s|@@SRV_IP_ADDRESS@@|${SRV_IP}|g" ${nomad_client_config}
   set +x
 
   return 0
@@ -216,8 +245,6 @@ configure_nomad_client ()
 
 install_cni_plugins ()
 {
-  CNI_PLUGINS_VERSION="0.8.6"
-
   # binary installation
   curl -L -o cni-plugins.tgz https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS_VERSION}/cni-plugins-linux-amd64-v${CNI_PLUGINS_VERSION}.tgz
   sudo mkdir -p /opt/cni/bin

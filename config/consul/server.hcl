@@ -38,7 +38,7 @@ encrypt = "@@CONSUL_KEY@@"
 # if using more than 1 server, rename the node appropriately
 node_name = "@@NODE_NAME@@"
 
-datacenter = "dc1"
+datacenter = "@@DATACENTER@@"
 
 data_dir = "/var/lib/consul"
 

@@ -64,6 +64,7 @@ install_consul()
     return 0
 }
 
+configure_consul()
 {
     local mode="$1"
 

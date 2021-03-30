@@ -1,0 +1,67 @@
+bind_addr = "0.0.0.0"
+
+advertise_addr = "{{'{{'}} GetInterfaceIP \"{{ network_interface }}\" }}"
+
+addresses {
+  http = "0.0.0.0"
+}
+
+connect {
+  enabled = true
+}
+
+ports {
+  grpc = 8502
+}
+
+disable_host_node_id = true
+
+disable_update_check = true
+
+enable_script_checks = true
+
+enable_syslog = true
+
+log_level = "INFO"
+
+log_file = "/var/log/consul.log"
+
+log_rotate_bytes = 1048576
+
+log_rotate_max_files = 3
+
+protocol = 3
+
+raft_protocol = 3
+
+encrypt = "{{ consul_key }}"
+
+node_name = "{{ node_name }}"
+
+datacenter = "{{ datacenter }}"
+
+data_dir = "/var/lib/consul"
+
+leave_on_terminate = true
+
+skip_leave_on_interrupt = false
+
+rejoin_after_leave = true
+
+server = {{ server }}
+
+{% if server -%}
+
+ui = true
+
+bootstrap_expect = 1
+
+{% else -%}
+
+ui = false
+
+{% endif -%}
+
+retry_join = ["{{ retry_join }}"]
+
+retry_max = 0

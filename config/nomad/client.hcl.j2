@@ -1,0 +1,43 @@
+# client settings
+
+client {
+  enabled = true
+
+  node_class = "{{ node_class }}"
+
+{% if cpu_total_compute != 'auto' %}
+  cpu_total_compute = {{ cpu_total_compute }}
+{% endif %}
+
+  network_interface = "{{ network_interface }}"
+
+  server_join {
+    retry_join = ["{{ retry_join }}"]
+    retry_max  = 0
+  }
+}
+
+plugin "raw_exec" {
+  config {
+    enabled = true
+  }
+}
+
+plugin "docker" {
+  config {
+    auth {
+      config = "/root/.docker/config.json"
+      # Nomad will prepend "docker-credential-" to the helper value and call
+      # that script name.
+      helper = "ecr-login"
+    }
+    
+    gc {
+      image_delay = "24h"
+    }
+    
+    volumes {
+      enabled = true
+    }
+  }
+}

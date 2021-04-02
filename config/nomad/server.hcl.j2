@@ -1,0 +1,14 @@
+# server settings
+
+server {
+  enabled = true
+
+  # count should be equal to the number of servers
+  bootstrap_expect = {{ bootstrap_expect }}
+  encrypt          = "{{ nomad_key }}"
+
+  server_join {
+    retry_join = ["{{ retry_join }}"]
+    retry_max = 0
+  }
+}

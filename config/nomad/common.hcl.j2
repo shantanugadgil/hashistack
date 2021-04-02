@@ -1,0 +1,33 @@
+# common settings
+
+bind_addr = "0.0.0.0"
+
+datacenter = "{{ datacenter }}"
+
+data_dir = "/var/lib/nomad"
+
+name = "{{ node_name }}"
+
+disable_update_check = true
+
+leave_on_interrupt = true
+
+leave_on_terminate = true
+
+enable_syslog = true
+
+log_file = "/var/log/nomad.log"
+
+log_rotate_bytes = 1048576
+
+log_rotate_max_files = 3
+
+addresses {
+  http = "0.0.0.0"
+}
+
+advertise {
+  http = "{{'{{'}} GetInterfaceIP \"{{ network_interface }}\" }}"
+  rpc  = "{{'{{'}} GetInterfaceIP \"{{ network_interface }}\" }}"
+  serf = "{{'{{'}} GetInterfaceIP \"{{ network_interface }}\" }}"
+}

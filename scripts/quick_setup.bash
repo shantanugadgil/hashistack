@@ -20,6 +20,7 @@ nomad_systemd_file="/etc/systemd/system/nomad.service"
 nomad_upstart_file="/etc/init/nomad.conf"
 
 nomad_config_dir="/etc/nomad.d"
+nomad_common_config="${nomad_config_dir}/common.hcl"
 nomad_server_config="${nomad_config_dir}/server.hcl"
 nomad_client_config="${nomad_config_dir}/client.hcl"
 nomad_vault_config="${nomad_config_dir}/vault.hcl"
@@ -72,7 +73,7 @@ configure_consul()
     curl -L -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/common.hcl.j2?q=$RANDOM
 
     case "$mode" in
-        'server')
+        'server'|'both')
             # TODO: make functions ...
             cat > server.json <<EOF
 {
@@ -152,23 +153,73 @@ configure_nomad()
     local mode="$1"
 
     mkdir -p ${nomad_config_dir}
-    curl -L https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl -o ${nomad_client_config}
+    curl -L -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/common.hcl.j2?q=$RANDOM
+    curl -L -o client.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl.j2?q=$RANDOM
+    curl -L -o server.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl.j2?q=$RANDOM
+
+    cat > common..json <<EOF
+{
+  "network_interface": "${NETWORK_INTERFACE}",
+  "node_name": "${NODE_NAME}",
+  "datacenter": "dc1",
+}
+EOF
+
+    cat > server.json <<EOF
+{
+  "network_interface": "${NETWORK_INTERFACE}",
+  "node_name": "${NODE_NAME}",
+  "datacenter": "dc1",
+  "server": true,
+  "bootstrap_expect": 1,
+  "nomad_key": "${NOMAD_KEY}",
+  "retry_join": "${SERVER_ADDRESS}"
+}
+EOF
+
+    cat > client.json <<EOF
+{
+  "network_interface": "${NETWORK_INTERFACE}",
+  "node_name": "${NODE_NAME}",
+  "datacenter": "dc1",
+  "server": false,
+  "node_class": "${NODE_CLASS}",
+  "cpu_total_compute": "${CPU_TOTAL_COMPUTE}",
+  "retry_join": "${SERVER_ADDRESS}"
+}
+EOF
+
+    j2 common.hcl.j2 common.json >| ${nomad_common_config}
+    chmod 0644 ${nomad_common_config}
+
+    case "$mode" in
+        "server")
+            j2 server.hcl.j2 server.json >| ${nomad_server_config}
+            chmod 0644 ${nomad_server_config}
+        ;;
+
+        "client")
+            j2 client.hcl.j2 server.json >| ${nomad_client_config}
+            chmod 0644 ${nomad_server_config}
+        ;;
+
+        "both")
+            j2 server.hcl.j2 server.json >| ${nomad_server_config}
+            chmod 0644 ${nomad_server_config}
+
+            j2 client.hcl.j2 server.json >| ${nomad_client_config}
+            chmod 0644 ${nomad_server_config}
+
+        ;;
+
+        *)
+            log "unsupported mode [$mode]"
+            exit 1
+        ;;
+    esac
+
     chown root:root ${nomad_client_config}
     chmod 0644 ${nomad_client_config}
-
-    set -x
-    # update variables
-
-    sed -i "s/@@NODE_NAME@@/${NODE_NAME}/g"           ${nomad_client_config}
-    sed -i "s/@@NODE_CLASS@@/${NODE_CLASS}/g"         ${nomad_client_config}
-    sed -i "s|@@SRV_IP_ADDRESS@@|${SRV_IP_ADDRESS}|g" ${nomad_client_config}
-    sed -i "s/eth0/${NETWORK_INTERFACE}/g"            ${nomad_client_config}
-
-    if [[ "${uname_m}" == "aarch64" ]]; then
-        sed -i "s/#cpu_total_compute.*/cpu_total_compute = ${cpu_total_compute}/g" ${nomad_client_config}
-    fi
-
-    set +x
 
     return 0
 }
@@ -253,6 +304,7 @@ detect_arch()
     case "${uname_m}" in
         'x86_64')
             OS_ARCH="amd64"
+            CPU_TOTAL_COMPUTE="auto"
             ;;
         'aarch64')
             OS_ARCH="arm64"
@@ -260,7 +312,7 @@ detect_arch()
             current_speed=$(dmidecode -t 4 | grep 'Current Speed:' | awk '{print $3}')
             cpu_count=$(cat /proc/cpuinfo | grep 'processor' | wc -l)
 
-            cpu_total_compute=$(( $current_speed * $cpu_count ))
+            CPU_TOTAL_COMPUTE=$(( $current_speed * $cpu_count ))
             ;;
         *)
             log "***** UNSUPPORTED ARCHITECTURE *****"
@@ -271,7 +323,7 @@ detect_arch()
     return 0
 }
 
-main()
+parse_args()
 {
     local install_type=""
     local server_address=""
@@ -314,6 +366,11 @@ main()
                 shift 2
                 ;;
 
+            '--nomad-key')
+                nomad_key="$2"
+                shift 2
+                ;;
+
             *)
                 log "unsupported option [$1]"
                 exit 1
@@ -328,7 +385,7 @@ main()
     fi
 
     case "$install_type" in
-        'server'|'client')
+        'server'|'client'|'both')
             log "INFO: setting up in [$install_type] mode ..."
             ;;
 
@@ -359,14 +416,29 @@ main()
 
     log "NETWORK_INTERFACE [$NETWORK_INTERFACE]"
 
-    ###
-    if [[ "$node_class" == "" ]]; then
-        log "node_class NOT defined"
-        exit 1
-    fi
-    NODE_CLASS="$node_class"
+    case "$INSTALL_TYPE" in
 
-    log "NODE_CLASS [$NODE_CLASS]"
+        'client'|'both')
+
+            ###
+            if [[ "$node_class" == "" ]]; then
+                log "node_class NOT defined"
+                exit 1
+            fi
+            NODE_CLASS="$node_class"
+
+            log "NODE_CLASS [$NODE_CLASS]"
+
+            ###
+            if [[ "$nomad_key" == "" ]]; then
+                log "nomad_key NOT defined"
+                exit 1
+            fi
+            NOMAD_KEY="$nomad_key"
+
+            log "NOMAD_KEY [$NOMAD_KEY]"
+        ;;
+    esac
 
     ###
     VAULT_SERVER="${vault_server}"
@@ -387,16 +459,15 @@ detect_init
 
 detect_arch
 
-main "$@"
+parse_args "$@"
 
 #install_consul
 configure_consul ${INSTALL_TYPE}
 
+#install_nomad
+configure_nomad ${INSTALL_TYPE}
+
 exit 0
-
-install_nomad
-configure_nomad_client
-
 configure_vault
 
 install_cni_plugins

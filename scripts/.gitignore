@@ -1,6 +1,6 @@
 client.hcl.j2
 client.json
-common.hcl
 common.hcl.j2
+common.json
 server.hcl.j2
 server.json

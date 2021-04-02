@@ -25,18 +25,37 @@ nomad_server_config="${nomad_config_dir}/server.hcl"
 nomad_client_config="${nomad_config_dir}/client.hcl"
 nomad_vault_config="${nomad_config_dir}/vault.hcl"
 
-log()
+_log()
 {
-    local msg="$1"
+    local type="$1"
+    local msg="$2"
 
     local dd=$(date +'%F %T')
 
-    echo "[$dd] $msg"
+    echo "[$dd] [$type] $msg"
+
     return 0
+}
+
+log_info()
+{
+    local msg="$@"
+
+    _log "INFO" "$msg"
+}
+
+log_fatal()
+{
+    local msg="$@"
+
+    _log "ERROR" "$msg"
+    exit 1
 }
 
 install_consul()
 {
+    log_info "inside [$FUNCNAME]"
+
     # binary
     curl -L -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_${OS_ARCH}.zip
     unzip -o consul.zip
@@ -51,6 +70,9 @@ install_consul()
             curl -L -o ${consul_systemd_file} https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service
             chown root:root ${consul_systemd_file}
             chmod 0644 ${consul_systemd_file}
+
+            systemctl daemon-reload
+            systemctl enable consul
         ;;
 
         'upstart')
@@ -65,17 +87,13 @@ install_consul()
     return 0
 }
 
-configure_consul()
+configure_consul_server()
 {
-    local mode="$1"
+    log_info "inside [$FUNCNAME]"
 
-    mkdir -p ${consul_config_dir}
     curl -L -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/common.hcl.j2?q=$RANDOM
 
-    case "$mode" in
-        'server'|'both')
-            # TODO: make functions ...
-            cat > server.json <<EOF
+    cat > server.json <<EOF
 {
   "network_interface": "${NETWORK_INTERFACE}",
   "node_name": "${NODE_NAME}",
@@ -87,13 +105,20 @@ configure_consul()
 }
 EOF
 
-            j2 common.hcl.j2 server.json >| ${consul_server_config}
-            chmod 0644 ${consul_server_config}
-        ;;
+    j2 common.hcl.j2 server.json >| ${consul_server_config}
+    chown root:root ${consul_server_config}
+    chmod 0644 ${consul_server_config}
 
-        'client')
+    return 0
+}
 
-            cat > client.json <<EOF
+configure_consul_client()
+{
+    log_info "inside [$FUNCNAME]"
+
+    curl -L -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/common.hcl.j2?q=$RANDOM
+
+    cat > client.json <<EOF
 {
   "network_interface": "${NETWORK_INTERFACE}",
   "node_name": "${NODE_NAME}",
@@ -104,10 +129,34 @@ EOF
 }
 EOF
 
-            j2 common.hcl.j2 client.json >| ${consul_client_config}
-            chmod 0644 ${consul_client_config}
+    j2 common.hcl.j2 client.json >| ${consul_client_config}
+    chown root:root ${consul_client_config}
+    chmod 0644 ${consul_client_config}
+
+    return 0
+}
+
+configure_consul()
+{
+    log_info "inside [$FUNCNAME]"
+
+    local mode="$1"
+
+    mkdir -p ${consul_config_dir}
+
+    case "$mode" in
+        'server'|'both')
+            configure_consul_server
         ;;
 
+        'client')
+            configure_consul_client
+        ;;
+
+        *)
+            log_info "ERROR: unsupported mode [$mode]"
+            exit 1
+        ;;
     esac
 
     return 0
@@ -115,6 +164,8 @@ EOF
 
 install_nomad()
 {
+    log_info "inside [$FUNCNAME]"
+
     # binary
     curl -L -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_${OS_ARCH}.zip
     unzip -o nomad.zip
@@ -133,8 +184,7 @@ install_nomad()
             chmod 0644 ${nomad_systemd_file}
 
             systemctl daemon-reload
-            systemctl enable consul nomad
-            #systemctl restart consul nomad
+            systemctl enable nomad
         ;;
 
         'upstart')
@@ -145,101 +195,127 @@ install_nomad()
             telinit 2
         ;;
     esac
+
     return 0
 }
 
-configure_nomad()
+configure_nomad_common()
 {
-    local mode="$1"
+    log_info "inside [$FUNCNAME]"
 
-    mkdir -p ${nomad_config_dir}
     curl -L -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/common.hcl.j2?q=$RANDOM
-    curl -L -o client.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl.j2?q=$RANDOM
-    curl -L -o server.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl.j2?q=$RANDOM
 
-    cat > common..json <<EOF
+    cat > common.json <<EOF
 {
   "network_interface": "${NETWORK_INTERFACE}",
   "node_name": "${NODE_NAME}",
-  "datacenter": "dc1",
+  "datacenter": "dc1"
 }
 EOF
 
+    j2 common.hcl.j2 common.json >| ${nomad_common_config}
+    chown root:root ${nomad_common_config}
+    chmod 0644 ${nomad_common_config}
+
+    return 0
+}
+
+configure_nomad_server()
+{
+    log_info "inside [$FUNCNAME]"
+
+    curl -L -o server.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl.j2?q=$RANDOM
+
     cat > server.json <<EOF
 {
-  "network_interface": "${NETWORK_INTERFACE}",
-  "node_name": "${NODE_NAME}",
-  "datacenter": "dc1",
-  "server": true,
   "bootstrap_expect": 1,
   "nomad_key": "${NOMAD_KEY}",
   "retry_join": "${SERVER_ADDRESS}"
 }
 EOF
 
+    j2 server.hcl.j2 server.json >| ${nomad_server_config}
+    chown root:root ${nomad_server_config}
+    chmod 0644 ${nomad_server_config}
+
+    return 0
+}
+
+configure_nomad_client()
+{
+    log_info "inside [$FUNCNAME]"
+
+    curl -L -o client.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl.j2?q=$RANDOM
+
     cat > client.json <<EOF
 {
   "network_interface": "${NETWORK_INTERFACE}",
-  "node_name": "${NODE_NAME}",
-  "datacenter": "dc1",
-  "server": false,
   "node_class": "${NODE_CLASS}",
   "cpu_total_compute": "${CPU_TOTAL_COMPUTE}",
   "retry_join": "${SERVER_ADDRESS}"
 }
 EOF
 
-    j2 common.hcl.j2 common.json >| ${nomad_common_config}
-    chmod 0644 ${nomad_common_config}
-
-    case "$mode" in
-        "server")
-            j2 server.hcl.j2 server.json >| ${nomad_server_config}
-            chmod 0644 ${nomad_server_config}
-        ;;
-
-        "client")
-            j2 client.hcl.j2 server.json >| ${nomad_client_config}
-            chmod 0644 ${nomad_server_config}
-        ;;
-
-        "both")
-            j2 server.hcl.j2 server.json >| ${nomad_server_config}
-            chmod 0644 ${nomad_server_config}
-
-            j2 client.hcl.j2 server.json >| ${nomad_client_config}
-            chmod 0644 ${nomad_server_config}
-
-        ;;
-
-        *)
-            log "unsupported mode [$mode]"
-            exit 1
-        ;;
-    esac
-
+    j2 client.hcl.j2 client.json >| ${nomad_client_config}
     chown root:root ${nomad_client_config}
     chmod 0644 ${nomad_client_config}
 
     return 0
 }
 
-configure_vault()
+configure_nomad_vault()
 {
+    log_info "inside [$FUNCNAME]"
+
     if [[ "$VAULT_SERVER" == "" ]]; then
         return 0
     fi
 
-    # client config
-    mkdir -p ${nomad_config_dir}
-    curl -L https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/vault.hcl -o ${nomad_vault_config}
-    chown root:root ${nomad_vault_config}
-    chmod 0644      ${nomad_vault_config}
+    curl -L -o vault.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/vault.hcl.j2?q=$RANDOM
 
-    # update variables
-    set -x
-    sed -i "s/@@VAULT_SERVER@@/${VAULT_SERVER}/g" ${nomad_vault_config}
-    set +x
+    cat > vault.json <<EOF
+{
+  "vault_server": "${VAULT_SERVER}"
+}
+EOF
+
+    j2 vault.hcl.j2 vault.json >| ${nomad_vault_config}
+    chown root:root ${nomad_vault_config}
+    chmod 0644 ${nomad_vault_config}
+    
+    return 0
+}
+
+configure_nomad()
+{
+    log_info "inside [$FUNCNAME]"
+
+    local mode="$1"
+
+    mkdir -p ${nomad_config_dir}
+
+    configure_nomad_common
+
+    case "$mode" in
+        "server")
+            configure_nomad_server
+        ;;
+
+        "client")
+            configure_nomad_client
+            configure_nomad_vault
+        ;;
+
+        "both")
+            configure_nomad_server
+            configure_nomad_client
+            configure_nomad_vault
+        ;;
+
+        *)
+            log_fatal "unsupported mode [$mode]"
+        ;;
+    esac
 
     return 0
 }
@@ -264,11 +340,10 @@ detect_root()
 {
     local me=$(id -un)
     if [[ "$me" != "root" ]]; then
-        log "ERROR: not running as root."
-        exit 1
+        log_fatal "not running as root."
     fi
 
-    log "INFO: running as root, all ok..."
+    log_info "running as root, all ok..."
 
     return 0
 }
@@ -279,7 +354,7 @@ detect_init()
     ### FIXME: treat non-systemd as upstart (don't detect SysV Init)
     local one_exe=$(readlink -m /proc/1/exe)
 
-    log "one_exe [$one_exe]"
+    log_info "one_exe [$one_exe]"
 
     INIT_SYSTEM="none"
 
@@ -292,7 +367,7 @@ detect_init()
             ;;
     esac
 
-    log "INIT_SYSTEM [$INIT_SYSTEM]"
+    log_info "INIT_SYSTEM [$INIT_SYSTEM]"
 
     return 0
 }
@@ -315,7 +390,7 @@ detect_arch()
             CPU_TOTAL_COMPUTE=$(( $current_speed * $cpu_count ))
             ;;
         *)
-            log "***** UNSUPPORTED ARCHITECTURE *****"
+            log_fatal "unsupported architecture [$uname_m]"
             exit 1
             ;;
     esac
@@ -372,39 +447,34 @@ parse_args()
                 ;;
 
             *)
-                log "unsupported option [$1]"
-                exit 1
+                log_fatal "unsupported option [$1]"
                 ;;
         esac
     done
 
     # failure conditions ...
     if [[ "$install_type" == "" ]]; then
-        log "install_type NOT defined"
-        exit 1
+        log_fatal "install_type NOT defined"
     fi
 
     case "$install_type" in
         'server'|'client'|'both')
-            log "INFO: setting up in [$install_type] mode ..."
+            log_info "setting up in [$install_type] mode ..."
             ;;
 
         *)
-            log "invalid install_type [$install_type]"
-            exit 1
+            log_fatal "invalid install_type [$install_type]"
             ;;
     esac
     INSTALL_TYPE="$install_type"
 
     if [[ "$server_address" == "" ]]; then
-        log "server_address NOT defined"
-        exit 1
+        log_fatal "server_address NOT defined"
     fi
     SERVER_ADDRESS="$server_address"
 
     if [[ "$consul_key" == "" ]]; then
-        log "consul_key NOT defined"
-        exit 1
+        log_fatal "consul_key NOT defined"
     fi
     CONSUL_KEY="$consul_key"
 
@@ -414,7 +484,7 @@ parse_args()
         NETWORK_INTERFACE=$(ip route show | grep '^default' | grep -o 'dev .*' | awk '{print $2}')
     fi
 
-    log "NETWORK_INTERFACE [$NETWORK_INTERFACE]"
+    log_info "NETWORK_INTERFACE [$NETWORK_INTERFACE]"
 
     case "$INSTALL_TYPE" in
 
@@ -422,36 +492,37 @@ parse_args()
 
             ###
             if [[ "$node_class" == "" ]]; then
-                log "node_class NOT defined"
+                log_info "node_class NOT defined"
                 exit 1
             fi
             NODE_CLASS="$node_class"
 
-            log "NODE_CLASS [$NODE_CLASS]"
+            log_info "NODE_CLASS [$NODE_CLASS]"
 
             ###
             if [[ "$nomad_key" == "" ]]; then
-                log "nomad_key NOT defined"
+                log_info "nomad_key NOT defined"
                 exit 1
             fi
             NOMAD_KEY="$nomad_key"
 
-            log "NOMAD_KEY [$NOMAD_KEY]"
+            log_info "NOMAD_KEY [$NOMAD_KEY]"
         ;;
     esac
 
     ###
     VAULT_SERVER="${vault_server}"
+    log_info "INFO: VAULT_SERVER [$VAULT_SERVER]"
 
     ###
     NODE_NAME=$(hostname -s)
-    log "NODE_NAME [$NODE_NAME]"
+    log_info "NODE_NAME [$NODE_NAME]"
 
     return 0
 }
 
 ### script starts here ###
-log "[$0] start"
+log_info "[$0] start"
 
 detect_root
 
@@ -461,17 +532,18 @@ detect_arch
 
 parse_args "$@"
 
-#install_consul
+install_consul
 configure_consul ${INSTALL_TYPE}
 
-#install_nomad
+install_nomad
 configure_nomad ${INSTALL_TYPE}
 
-exit 0
-configure_vault
+#install_cni_plugins
 
-install_cni_plugins
+# service "enabled" during install
 service consul restart
 service nomad restart
 
-log "[$0] done"
+log_info "[$0] done"
+exit 0
+

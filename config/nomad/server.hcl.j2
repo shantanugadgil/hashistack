@@ -12,3 +12,14 @@ server {
     retry_max = 0
   }
 }
+
+{% if vault_server != "" %}
+vault {
+  enabled = true
+  address = "http://{{ vault_server }}:8200"
+
+  task_token_ttl = "1h"
+
+  token = "{{ vault_token }}"
+}
+{% endif %}

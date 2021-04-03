@@ -295,7 +295,9 @@ __configure_nomad_server()
 {
   "bootstrap_expect": 1,
   "nomad_key": "${NOMAD_KEY}",
-  "retry_join": "${SERVER_ADDRESS}"
+  "retry_join": "${SERVER_ADDRESS}",
+  "vault_server": "${VAULT_SERVER}",
+  "vault_token": "undefined"
 }
 EOF
 
@@ -436,6 +438,8 @@ __configure_vault_server()
     cat > server.json <<EOF
 {
   "cluster_name": "${CLUSTER_NAME}",
+  "node_name": "${NODE_NAME}",
+  "server_address": "${SERVER_ADDRESS}",
   "storage": "${STORAGE}",
   "seal": "default"
 }
@@ -459,9 +463,9 @@ __configure_vault_client()
 
     cat > client.json <<EOF
 {
+  "cluster_name": "${CLUSTER_NAME}",
+  "node_name": "${NODE_NAME}",
   "network_interface": "${NETWORK_INTERFACE}",
-  "node_class": "${NODE_CLASS}",
-  "cpu_total_compute": "${CPU_TOTAL_COMPUTE}",
   "retry_join": "${SERVER_ADDRESS}"
 }
 EOF
@@ -857,7 +861,7 @@ detect_arch
 parse_args "$@"
 
 # service "enabled" during install, restart it here
-if [[ "$MODE" == "configure" ]]; then
+if [[ "$ACTION" == "configure" ]]; then
     log_info "restarting [$COMPONENT] service ..."
     service ${COMPONENT} restart
 fi

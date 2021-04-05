@@ -116,7 +116,7 @@ install_consul()
     log_debug "start"
 
     # binary
-    curl -L -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_${OS_ARCH}.zip
+    curl -L -f -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_${OS_ARCH}.zip
     unzip -o consul.zip
     chown root:root consul
     chmod 0755 consul
@@ -126,7 +126,7 @@ install_consul()
     # service file
     case "$INIT_SYSTEM" in
         'systemd')
-            curl -L -o ${consul_systemd_file} https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service
+            curl -L -f -o ${consul_systemd_file} https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service
             chown root:root ${consul_systemd_file}
             chmod 0644 ${consul_systemd_file}
 
@@ -135,7 +135,7 @@ install_consul()
         ;;
 
         'upstart')
-            curl -L -o ${consul_upstart_file} https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/consul.conf
+            curl -L -f -o ${consul_upstart_file} https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/consul.conf
             chown root:root ${consul_upstart_file}
             chmod 0644 ${consul_upstart_file}
             #initctl reload-configuration
@@ -151,7 +151,7 @@ __configure_consul_server()
 {
     log_debug "start"
 
-    curl -L -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/common.hcl.j2?q=$RANDOM
+    curl -L -f -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/common.hcl.j2?q=$RANDOM
 
     cat > server.json <<EOF
 {
@@ -177,7 +177,7 @@ __configure_consul_client()
 {
     log_debug "start"
 
-    curl -L -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/common.hcl.j2?q=$RANDOM
+    curl -L -f -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/common.hcl.j2?q=$RANDOM
 
     cat > client.json <<EOF
 {
@@ -230,7 +230,7 @@ install_nomad()
     log_debug "start"
 
     # binary
-    curl -L -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_${OS_ARCH}.zip
+    curl -L -f -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_${OS_ARCH}.zip
     unzip -o nomad.zip
     chown root:root nomad
     chmod 0755 nomad
@@ -242,7 +242,7 @@ install_nomad()
     # service file
     case "$INIT_SYSTEM" in
         'systemd')
-            curl -L https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -o ${nomad_systemd_file}
+            curl -L -f -o ${nomad_systemd_file} https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service
             chown root:root ${nomad_systemd_file}
             chmod 0644 ${nomad_systemd_file}
 
@@ -251,7 +251,7 @@ install_nomad()
         ;;
 
         'upstart')
-            curl -L https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/nomad.conf -o ${nomad_upstart_file}
+            curl -L -f -o ${nomad_upstart_file} https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/nomad.conf
             chown root:root ${nomad_upstart_file}
             chmod 0644 ${nomad_upstart_file}
             initctl reload-configuration
@@ -267,7 +267,7 @@ __configure_nomad_common()
 {
     log_debug "start"
 
-    curl -L -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/common.hcl.j2?q=$RANDOM
+    curl -L -f -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/common.hcl.j2?q=$RANDOM
 
     cat > common.json <<EOF
 {
@@ -289,7 +289,7 @@ __configure_nomad_server()
 {
     log_debug "start"
 
-    curl -L -o server.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl.j2?q=$RANDOM
+    curl -L -f -o server.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl.j2?q=$RANDOM
 
     cat > server.json <<EOF
 {
@@ -313,7 +313,7 @@ __configure_nomad_client()
 {
     log_debug "start"
 
-    curl -L -o client.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl.j2?q=$RANDOM
+    curl -L -f -o client.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl.j2?q=$RANDOM
 
     cat > client.json <<EOF
 {
@@ -340,7 +340,7 @@ __configure_nomad_vault()
         return 0
     fi
 
-    curl -L -o vault.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/vault.hcl.j2?q=$RANDOM
+    curl -L -f -o vault.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/vault.hcl.j2?q=$RANDOM
 
     cat > vault.json <<EOF
 {
@@ -396,7 +396,7 @@ install_vault()
     log_debug "start"
 
     # binary
-    curl -L -o vault.zip https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_${OS_ARCH}.zip
+    curl -L -f -o vault.zip https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_${OS_ARCH}.zip
     unzip -o vault.zip
     chown root:root vault
     chmod 0755 vault
@@ -408,7 +408,7 @@ install_vault()
     # service file
     case "$INIT_SYSTEM" in
         'systemd')
-            curl -L https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/vault.service -o ${vault_systemd_file}
+            curl -L -f -o ${vault_systemd_file} https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/vault.service
             chown root:root ${vault_systemd_file}
             chmod 0644 ${vault_systemd_file}
 
@@ -417,7 +417,7 @@ install_vault()
         ;;
 
         'upstart')
-            curl -L https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/vault.conf -o ${vault_upstart_file}
+            curl -L -f -o ${vault_upstart_file} https://raw.githubusercontent.com/shantanugadgil/hashistack/master/upstart/vault.conf
             chown root:root ${vault_upstart_file}
             chmod 0644 ${vault_upstart_file}
             initctl reload-configuration
@@ -433,7 +433,7 @@ __configure_vault_server()
 {
     log_debug "start"
 
-    curl -L -o server.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/vault/server.hcl.j2?q=$RANDOM
+    curl -L -f -o server.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/vault/server.hcl.j2?q=$RANDOM
 
     cat > server.json <<EOF
 {
@@ -459,7 +459,7 @@ __configure_vault_client()
 
     log_fatal "NOT IMPLEMENTED YET"
 
-    curl -L -o client.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/vault/client.hcl.j2?q=$RANDOM
+    curl -L -f -o client.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/vault/client.hcl.j2?q=$RANDOM
 
     cat > client.json <<EOF
 {
@@ -511,7 +511,7 @@ install_cniplugins()
 {
     log_debug "start"
 
-    curl -L -o cni-plugins.tgz https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS_VERSION}/cni-plugins-linux-${OS_ARCH}-v${CNI_PLUGINS_VERSION}.tgz
+    curl -L -f -o cni-plugins.tgz https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS_VERSION}/cni-plugins-linux-${OS_ARCH}-v${CNI_PLUGINS_VERSION}.tgz
     mkdir -p /opt/cni/bin
     tar -C /opt/cni/bin -xzf cni-plugins.tgz
     rm -fv cni-plugins.tgz

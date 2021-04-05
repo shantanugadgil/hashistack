@@ -817,6 +817,12 @@ parse_args()
                     check_if_defined "consul_key" "$consul_key"
                     CONSUL_KEY="$consul_key"
                     log_info "CONSUL_KEY [$CONSUL_KEY]"
+
+                    case "${mode}" in
+                        'client')
+                            check_if_defined "server_address" "$server_address"
+                        ;;
+                    esac
                 ;;
 
                 'nomad')
@@ -824,15 +830,29 @@ parse_args()
                     VAULT_SERVER="${vault_server}"
                     log_info "VAULT_SERVER [$VAULT_SERVER]"
 
-                    #####
-                    check_if_defined "nomad_key" "$nomad_key"
-                    NOMAD_KEY="$nomad_key"
-                    log_info "NOMAD_KEY [$NOMAD_KEY]"
+                    case "${mode}" in
+                        'server')
+                            #####
+                            check_if_defined "nomad_key" "$nomad_key"
+                            NOMAD_KEY="$nomad_key"
+                            log_info "NOMAD_KEY [$NOMAD_KEY]"
+                        ;;
+                    esac
 
-                    #####
-                    check_if_defined "node_class" "$node_class"
-                    NODE_CLASS="$node_class"
-                    log_info "NODE_CLASS [$NODE_CLASS]"
+                    case "${mode}" in
+                        'client'|'both')
+                            #####
+                            check_if_defined "node_class" "$node_class"
+                            NODE_CLASS="$node_class"
+                            log_info "NODE_CLASS [$NODE_CLASS]"
+                        ;;
+                    esac
+
+                    case "${mode}" in
+                        'client')
+                            check_if_defined "server_address" "$server_address"
+                        ;;
+                    esac
                 ;;
 
                 *)

@@ -6,7 +6,7 @@ set -u
 set -e
 
 ###############################################################################
-CONSUL_VERSION=${CONSUL_VERSION:-"1.9.4"}
+CONSUL_VERSION=${CONSUL_VERSION:-"1.9.5"}
 
 consul_config_dir="/etc/consul.d"
 consul_server_config="${consul_config_dir}/server.hcl"
@@ -151,7 +151,7 @@ __configure_consul_server()
 {
     log_debug "start"
 
-    curl -L -f -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/common.hcl.j2?q=$RANDOM
+    curl -L -f -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/common.hcl.j2?${RANDOM}
 
     cat > server.json <<EOF
 {
@@ -177,7 +177,7 @@ __configure_consul_client()
 {
     log_debug "start"
 
-    curl -L -f -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/common.hcl.j2?q=$RANDOM
+    curl -L -f -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/common.hcl.j2?${RANDOM}
 
     cat > client.json <<EOF
 {
@@ -267,7 +267,7 @@ __configure_nomad_common()
 {
     log_debug "start"
 
-    curl -L -f -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/common.hcl.j2?q=$RANDOM
+    curl -L -f -o common.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/common.hcl.j2?${RANDOM}
 
     cat > common.json <<EOF
 {
@@ -289,7 +289,7 @@ __configure_nomad_server()
 {
     log_debug "start"
 
-    curl -L -f -o server.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl.j2?q=$RANDOM
+    curl -L -f -o server.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl.j2?${RANDOM}
 
     cat > server.json <<EOF
 {
@@ -313,7 +313,7 @@ __configure_nomad_client()
 {
     log_debug "start"
 
-    curl -L -f -o client.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl.j2?q=$RANDOM
+    curl -L -f -o client.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl.j2?${RANDOM}
 
     cat > client.json <<EOF
 {
@@ -340,7 +340,7 @@ __configure_nomad_vault()
         return 0
     fi
 
-    curl -L -f -o vault.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/vault.hcl.j2?q=$RANDOM
+    curl -L -f -o vault.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/vault.hcl.j2?${RANDOM}
 
     cat > vault.json <<EOF
 {
@@ -433,7 +433,7 @@ __configure_vault_server()
 {
     log_debug "start"
 
-    curl -L -f -o server.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/vault/server.hcl.j2?q=$RANDOM
+    curl -L -f -o server.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/vault/server.hcl.j2?${RANDOM}
 
     cat > server.json <<EOF
 {
@@ -459,7 +459,7 @@ __configure_vault_client()
 
     log_fatal "NOT IMPLEMENTED YET"
 
-    curl -L -f -o client.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/vault/client.hcl.j2?q=$RANDOM
+    curl -L -f -o client.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/vault/client.hcl.j2?${RANDOM}
 
     cat > client.json <<EOF
 {

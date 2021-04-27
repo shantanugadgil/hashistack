@@ -5,9 +5,9 @@ client {
 
   node_class = "{{ node_class }}"
 
-{% if cpu_total_compute != 'auto' %}
+{% if cpu_total_compute != 'auto' -%}
   cpu_total_compute = {{ cpu_total_compute }}
-{% endif %}
+{%- endif %}
 
   network_interface = "{{ network_interface }}"
 

@@ -295,9 +295,7 @@ __configure_nomad_server()
 {
   "bootstrap_expect": 1,
   "nomad_key": "${NOMAD_KEY}",
-  "retry_join": "${SERVER_ADDRESS}",
-  "vault_server": "${VAULT_SERVER}",
-  "vault_token": "undefined"
+  "retry_join": "${SERVER_ADDRESS}"
 }
 EOF
 
@@ -317,9 +315,9 @@ __configure_nomad_client()
 
     cat > client.json <<EOF
 {
-  "network_interface": "${NETWORK_INTERFACE}",
   "node_class": "${NODE_CLASS}",
   "cpu_total_compute": "${CPU_TOTAL_COMPUTE}",
+  "network_interface": "${NETWORK_INTERFACE}",
   "retry_join": "${SERVER_ADDRESS}"
 }
 EOF
@@ -336,15 +334,13 @@ __configure_nomad_vault()
 {
     log_debug "start"
 
-    if [[ "$VAULT_SERVER" == "" ]]; then
-        return 0
-    fi
-
     curl -L -f -o vault.hcl.j2 https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/vault.hcl.j2?${RANDOM}
 
     cat > vault.json <<EOF
 {
-  "vault_server": "${VAULT_SERVER}"
+  "mode": "${MODE}",
+  "vault_server": "${VAULT_SERVER}",
+  "vault_token": "undefined"
 }
 EOF
 
@@ -362,9 +358,13 @@ configure_nomad()
 
     local mode="$1"
 
+    # for Vault configuration
+    MODE="${mode}"
+
     mkdir -p ${nomad_config_dir}
 
     __configure_nomad_common
+    __configure_nomad_vault
 
     case "$mode" in
         "server")
@@ -373,13 +373,11 @@ configure_nomad()
 
         "client")
             __configure_nomad_client
-            __configure_nomad_vault
         ;;
 
         "both")
             __configure_nomad_server
             __configure_nomad_client
-            __configure_nomad_vault
         ;;
 
         *)
@@ -488,7 +486,7 @@ configure_vault()
     mkdir -p ${vault_config_dir}
 
     case "$mode" in
-        'server'|'both')
+        'server')
             __configure_vault_server
         ;;
 

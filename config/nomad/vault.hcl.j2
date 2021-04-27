@@ -1,4 +1,11 @@
+{% if vault_server != "" -%}
 vault {
   enabled = true
   address = "http://{{ vault_server }}:8200"
+
+{% if mode == 'server' -%}
+  task_token_ttl = "1h"
+  token = "{{ vault_token }}"
+{%- endif %}
 }
+{%- endif %}

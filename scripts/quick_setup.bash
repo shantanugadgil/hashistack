@@ -157,7 +157,7 @@ __configure_consul_server()
 {
   "network_interface": "${NETWORK_INTERFACE}",
   "node_name": "${NODE_NAME}",
-  "datacenter": "dc1",
+  "datacenter": "${DATACENTER}",
   "server": true,
   "bootstrap_expect": 1,
   "consul_key": "${CONSUL_KEY}",
@@ -183,7 +183,7 @@ __configure_consul_client()
 {
   "network_interface": "${NETWORK_INTERFACE}",
   "node_name": "${NODE_NAME}",
-  "datacenter": "dc1",
+  "datacenter": "${DATACENTER}",
   "server": false,
   "consul_key": "${CONSUL_KEY}",
   "retry_join": "${SERVER_ADDRESS}"
@@ -273,7 +273,7 @@ __configure_nomad_common()
 {
   "network_interface": "${NETWORK_INTERFACE}",
   "node_name": "${NODE_NAME}",
-  "datacenter": "dc1"
+  "datacenter": "${DATACENTER}"
 }
 EOF
 
@@ -672,6 +672,7 @@ parse_args()
     local nomad_key=""
     local storage=""
     local cluster_name=""
+    local datacenter=""
 
     # crude args parser
     while (( $# > 0 )); do
@@ -684,6 +685,11 @@ parse_args()
 
             '--component')
                 component="$2"
+                shift 2
+                ;;
+
+            '--datacenter')
+                datacenter="$2"
                 shift 2
                 ;;
 
@@ -749,6 +755,11 @@ parse_args()
     esac
     ACTION="$action"
     log_info "ACTION [$ACTION]"
+
+    #####
+    check_if_defined "datacenter" "$datacenter"
+    DATACENTER="$datacenter"
+    log_info "DATACENTER [$DATACENTER]"
 
     #####
     check_if_defined "component" "$component"

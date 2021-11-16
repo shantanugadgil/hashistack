@@ -6,7 +6,7 @@ set -u
 set -e
 
 ###############################################################################
-CONSUL_VERSION=${CONSUL_VERSION:-"1.10.1"}
+CONSUL_VERSION=${CONSUL_VERSION:-"1.10.4"}
 
 consul_config_dir="/etc/consul.d"
 consul_server_config="${consul_config_dir}/server.hcl"
@@ -16,7 +16,7 @@ consul_systemd_file="/etc/systemd/system/consul.service"
 consul_upstart_file="/etc/init/consul.conf"
 
 ###############################################################################
-NOMAD_VERSION=${NOMAD_VERSION:-"1.1.2"}
+NOMAD_VERSION=${NOMAD_VERSION:-"1.1.6"}
 
 nomad_config_dir="/etc/nomad.d"
 nomad_common_config="${nomad_config_dir}/common.hcl"
@@ -28,7 +28,7 @@ nomad_systemd_file="/etc/systemd/system/nomad.service"
 nomad_upstart_file="/etc/init/nomad.conf"
 
 ###############################################################################
-VAULT_VERSION=${VAULT_VERSION:-"1.7.3"}
+VAULT_VERSION=${VAULT_VERSION:-"1.8.5"}
 
 vault_config_dir="/etc/vault.d"
 vault_server_config="${vault_config_dir}/server.hcl"
@@ -38,7 +38,7 @@ vault_systemd_file="/etc/systemd/system/vault.service"
 vault_upstart_file="/etc/init/vault.conf"
 
 ###############################################################################
-CNI_PLUGINS_VERSION=${CNI_PLUGINS_VERSION:-"0.9.1"}
+CNI_PLUGINS_VERSION=${CNI_PLUGINS_VERSION:-"1.0.1"}
 
 ###############################################################################
 

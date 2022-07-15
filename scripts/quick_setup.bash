@@ -6,7 +6,7 @@ set -u
 set -e
 
 ###############################################################################
-CONSUL_VERSION=${CONSUL_VERSION:-"1.12.2"}
+CONSUL_VERSION=${CONSUL_VERSION:-"1.12.3"}
 
 consul_config_dir="/etc/consul.d"
 consul_server_config="${consul_config_dir}/server.hcl"
@@ -16,7 +16,7 @@ consul_systemd_file="/etc/systemd/system/consul.service"
 consul_upstart_file="/etc/init/consul.conf"
 
 ###############################################################################
-NOMAD_VERSION=${NOMAD_VERSION:-"1.3.1"}
+NOMAD_VERSION=${NOMAD_VERSION:-"1.3.2"}
 
 nomad_config_dir="/etc/nomad.d"
 nomad_common_config="${nomad_config_dir}/common.hcl"
@@ -38,7 +38,7 @@ vault_systemd_file="/etc/systemd/system/vault.service"
 vault_upstart_file="/etc/init/vault.conf"
 
 ###############################################################################
-CNI_PLUGINS_VERSION=${CNI_PLUGINS_VERSION:-"1.1.0"}
+CNI_PLUGINS_VERSION=${CNI_PLUGINS_VERSION:-"1.1.1"}
 
 ###############################################################################
 

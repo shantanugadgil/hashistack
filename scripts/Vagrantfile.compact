@@ -99,7 +99,7 @@ configure_nomad_server ()
   wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl -O ${nomad_server_config}
   sudo chown root:root ${nomad_server_config}
   sudo chmod 0644      ${nomad_server_config}
-  
+
   # update variables
 
   nomad_address=$(ip -o -4 addr list eth1 | head -n1 | awk '{print $4}' | cut -d/ -f1)
@@ -231,7 +231,7 @@ configure_nomad_client ()
   wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl -O ${nomad_client_config}
   sudo chown root:root ${nomad_client_config}
   sudo chmod 0644      ${nomad_client_config}
-  
+
   set -x
   # update variables
   sed -i "s/eth0/eth1/g"                    ${nomad_client_config}
@@ -345,7 +345,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         vb.name = hostname
         vb.customize ["modifyvm", :id, "--memory", info[:mem], "--cpus", info[:cpus], "--hwvirtex", "on"]
-  
+
         #if "#{info[:class]}" == "worker"
         #  override.vm.provision :shell, inline: $install_common_after
         #end

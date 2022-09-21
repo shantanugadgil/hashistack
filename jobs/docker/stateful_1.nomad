@@ -4,7 +4,7 @@ job "stateful_docker" {
   type = "service"
 
   constraint {
-    attribute = "${attr.kernel.name}"
+    attribute = attr.kernel.name
     value     = "linux"
   }
 
@@ -24,7 +24,7 @@ job "stateful_docker" {
     }
 
     constraint {
-      attribute = "${meta.statefulid}"
+      attribute = meta.statefulid
       value     = "0"
     }
 
@@ -70,7 +70,7 @@ job "stateful_docker" {
     }
 
     constraint {
-      attribute = "${meta.statefulid}"
+      attribute = meta.statefulid
       value     = "1"
     }
 
@@ -116,7 +116,7 @@ job "stateful_docker" {
     }
 
     constraint {
-      attribute = "${meta.statefulid}"
+      attribute = meta.statefulid
       value     = "2"
     }
 

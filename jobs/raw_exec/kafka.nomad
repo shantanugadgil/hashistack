@@ -59,7 +59,7 @@ broker.id={{with node}}{{index .Node.Meta "kafkaid"}}{{end}}
 
 ############################# Socket Server Settings #############################
 
-# The address the socket server listens on. It will get the value returned from 
+# The address the socket server listens on. It will get the value returned from
 # java.net.InetAddress.getCanonicalHostName() if not configured.
 #   FORMAT:
 #     listeners = listener_name://host_name:port
@@ -68,7 +68,7 @@ broker.id={{with node}}{{index .Node.Meta "kafkaid"}}{{end}}
 #listeners=PLAINTEXT://:9092
 listeners=PLAINTEXT://{{with node}}{{.Node.Address}}{{end}}:9092
 
-# Hostname and port the broker will advertise to producers and consumers. If not set, 
+# Hostname and port the broker will advertise to producers and consumers. If not set,
 # it uses the value for "listeners" if configured.  Otherwise, it will use the value
 # returned from java.net.InetAddress.getCanonicalHostName().
 #advertised.listeners=PLAINTEXT://your.host.name:9092

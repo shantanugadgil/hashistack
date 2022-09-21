@@ -72,7 +72,7 @@ log_error()
     local msg="$@"
 
     __log 1 "ERROR" "$msg"
-    
+
     return 0
 }
 
@@ -347,7 +347,7 @@ EOF
     j2 vault.hcl.j2 vault.json >| ${nomad_vault_config}
     chown root:root ${nomad_vault_config}
     chmod 0644 ${nomad_vault_config}
-    
+
     log_debug "end"
     return 0
 }
@@ -815,7 +815,7 @@ parse_args()
                     check_if_defined "cluster_name" "$cluster_name"
                     CLUSTER_NAME="$cluster_name"
                     log_info "CLUSTER_NAME [$CLUSTER_NAME]"
-                    
+
                     check_if_defined "storage" "$storage"
                     STORAGE="$storage"
                     log_info "STORAGE [$STORAGE]"

@@ -39,4 +39,3 @@ job "fabio_raw" {
     }
   }
 }
-

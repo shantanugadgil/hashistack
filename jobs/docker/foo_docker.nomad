@@ -9,6 +9,9 @@ job "foo_docker" {
 
   group "gowebhello" {
     count = 2
+    network {
+      port  "http"{ to = 8080 }
+    }
 
     task "gowebhello" {
       driver         = "docker"
@@ -16,20 +19,12 @@ job "foo_docker" {
 
       config {
         image = "udhos/web-scratch:0.7.1"
-
-        port_map {
-          http = 8080
-        }
+        ports = ["http"]
       }
 
       resources {
         cpu    = 500
         memory = 256
-
-        network {
-          mbits = 10
-          port  "http"{}
-        }
       }
 
       env {

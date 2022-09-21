@@ -14,6 +14,11 @@ job "haproxy_docker" {
   }
   group "lb" {
     count = 1
+    network {
+      port "http" {
+        static = 80
+      }
+    }
 
     restart {
       interval = "10000s"
@@ -29,10 +34,7 @@ job "haproxy_docker" {
       config {
         image        = "haproxy:2.0.1-alpine"
         network_mode = "host"
-
-        port_map {
-          http = 80
-        }
+        ports        = ["http"]
 
         volumes = [
           "custom/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg",
@@ -93,14 +95,6 @@ EOH
       resources {
         cpu    = 500 # 500 Mhz
         memory = 128 # 128MB
-
-        network {
-          mbits = 10
-
-          port "http" {
-            static = 80
-          }
-        }
       }
     }
   }

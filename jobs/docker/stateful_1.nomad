@@ -17,6 +17,9 @@ job "stateful_docker" {
 
   group "group_0" {
     count = 1
+    network {
+      port  "http"{ to = 8080 }
+    }
 
     constraint {
       attribute = "${meta.statefulid}"
@@ -29,20 +32,12 @@ job "stateful_docker" {
 
       config {
         image = "shantanug/gowebhello:0.2"
-
-        port_map {
-          http = 8080
-        }
+        ports = ["http"]
       }
 
       resources {
         cpu    = 500
         memory = 256
-
-        network {
-          mbits = 10
-          port  "http"{}
-        }
       }
 
       env {
@@ -68,6 +63,9 @@ job "stateful_docker" {
 
   group "group_1" {
     count = 1
+    network {
+      port  "http"{ to = 8080}
+    }
 
     constraint {
       attribute = "${meta.statefulid}"
@@ -80,20 +78,12 @@ job "stateful_docker" {
 
       config {
         image = "shantanug/gowebhello:0.2"
-
-        port_map {
-          http = 8080
-        }
+        ports = ["http"]
       }
 
       resources {
         cpu    = 500
         memory = 256
-
-        network {
-          mbits = 10
-          port  "http"{}
-        }
       }
 
       env {
@@ -119,6 +109,9 @@ job "stateful_docker" {
 
   group "group_2" {
     count = 1
+    network {
+      port  "http"{ to = 8080 }
+    }
 
     constraint {
       attribute = "${meta.statefulid}"
@@ -131,20 +124,12 @@ job "stateful_docker" {
 
       config {
         image = "shantanug/gowebhello:0.2"
-
-        port_map {
-          http = 8080
-        }
+        ports = ["http"]
       }
 
       resources {
         cpu    = 500
         memory = 256
-
-        network {
-          mbits = 10
-          port  "http"{}
-        }
       }
 
       env {

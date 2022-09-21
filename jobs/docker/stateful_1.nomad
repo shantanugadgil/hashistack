@@ -1,7 +1,7 @@
 job "stateful_docker" {
   datacenters = ["dc1"]
 
-  type        = "service"
+  type = "service"
 
   constraint {
     attribute = "${attr.kernel.name}"
@@ -18,7 +18,9 @@ job "stateful_docker" {
   group "group_0" {
     count = 1
     network {
-      port  "http"{ to = 8080 }
+      port "http" {
+        to = 8080
+      }
     }
 
     constraint {
@@ -56,15 +58,15 @@ job "stateful_docker" {
           timeout  = "2s"
         }
       } # service
-    } # task web
-  } # group group_0
+    }   # task web
+  }     # group group_0
 
   ############################################################
 
   group "group_1" {
     count = 1
     network {
-      port  "http"{ to = 8080}
+      port "http" { to = 8080 }
     }
 
     constraint {
@@ -102,15 +104,15 @@ job "stateful_docker" {
           timeout  = "2s"
         }
       } # service
-    } # task web
-  } # group group_1
+    }   # task web
+  }     # group group_1
 
   ############################################################
 
   group "group_2" {
     count = 1
     network {
-      port  "http"{ to = 8080 }
+      port "http" { to = 8080 }
     }
 
     constraint {
@@ -148,6 +150,6 @@ job "stateful_docker" {
           timeout  = "2s"
         }
       } # service
-    } # task web
-  } # group group_2
-} # job
+    }   # task web
+  }     # group group_2
+}       # job

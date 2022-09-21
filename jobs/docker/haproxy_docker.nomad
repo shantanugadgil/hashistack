@@ -8,10 +8,12 @@ job "haproxy_docker" {
     attribute = "${node.class}"
     value     = "lb"
   }
+
   update {
     stagger      = "10s"
     max_parallel = 1
   }
+
   group "lb" {
     count = 1
     network {

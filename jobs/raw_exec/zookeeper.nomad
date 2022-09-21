@@ -17,18 +17,18 @@ job "zookeeper_cluster" {
 
     restart {
       #attempts = 3
-      delay    = "30s"
+      delay = "30s"
     }
 
     task "zktask" {
-      driver       = "raw_exec"
+      driver = "raw_exec"
       #shutdown_delay = "10s"
       #kill_timeout = "10s"
 
       artifact {
         #source      =  "https://www-us.apache.org/dist/zookeeper/zookeeper-3.5.5/apache-zookeeper-3.5.5-bin.tar.gz"
         #source      =  "http://192.168.0.54:8080/www/apache-zookeeper-3.5.5-bin.tar.gz"
-        source      =  "http://10.20.13.80:8080/www/apache-zookeeper-3.5.5-bin.tar.gz"
+        source      = "http://10.20.13.80:8080/www/apache-zookeeper-3.5.5-bin.tar.gz"
         destination = "local/"
       }
 
@@ -136,11 +136,11 @@ EOF
       }
 
       template {
-        data = <<EOH
+        data        = <<EOH
 {{with node}}{{index .Node.Meta "zkid"}}{{end}}
 EOH
         destination = "local/myid"
-}
+      }
 
       template {
         data = <<EOH
@@ -156,7 +156,7 @@ syncLimit=5
 EOH
 
         destination = "local/config/zoo.cfg"
-}
+      }
 
       template {
         data = <<EOH

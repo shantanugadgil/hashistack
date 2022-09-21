@@ -10,7 +10,9 @@ job "bar_docker" {
   group "gowebhello" {
     count = 2
     network {
-      port  "http"{ to = 8080 }
+      port "http" {
+        to = 8080
+      }
     }
 
     task "gowebhello" {

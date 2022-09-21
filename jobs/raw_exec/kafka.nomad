@@ -18,18 +18,18 @@ job "kafka_cluster" {
 
     restart {
       #attempts = 3
-      delay    = "30s"
+      delay = "30s"
     }
 
     task "kafkatask" {
-      driver       = "raw_exec"
+      driver = "raw_exec"
       #shutdown_delay = "10s"
       #kill_timeout = "10s"
 
       artifact {
         #source      =  "https://www-us.apache.org/dist/kafka/2.3.0/kafka_2.12-2.3.0.tgz"
         #source      =  "http://192.168.0.54:8080/www/kafka_2.12-2.3.0.tgz"
-        source      =  "http://10.20.13.80:8080/www/kafka_2.12-2.3.0.tgz"
+        source      = "http://10.20.13.80:8080/www/kafka_2.12-2.3.0.tgz"
         destination = "local/"
       }
 

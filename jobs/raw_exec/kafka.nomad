@@ -5,7 +5,7 @@ job "kafka_cluster" {
 
   # TODO: change the constraint later
   constraint {
-    attribute = "${node.class}"
+    attribute = node.class
     value     = "zookeeper"
   }
 

@@ -3,7 +3,7 @@ job "bar_raw" {
   type        = "service"
 
   constraint {
-    attribute = "${node.class}"
+    attribute = node.class
     value     = "worker"
   }
 

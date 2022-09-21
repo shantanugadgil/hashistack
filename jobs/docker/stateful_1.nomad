@@ -9,7 +9,7 @@ job "stateful_docker" {
   }
 
   constraint {
-    attribute = "${node.class}"
+    attribute = node.class
     value     = "worker"
   }
 

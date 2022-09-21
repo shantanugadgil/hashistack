@@ -4,7 +4,7 @@ job "zookeeper_cluster" {
   type = "system"
 
   constraint {
-    attribute = "${node.class}"
+    attribute = node.class
     value     = "zookeeper"
   }
 

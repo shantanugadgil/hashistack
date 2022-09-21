@@ -3,7 +3,7 @@ job "fabio_docker" {
   type        = "system"
 
   constraint {
-    attribute = "${node.class}"
+    attribute = node.class
     value     = "lb"
   }
 

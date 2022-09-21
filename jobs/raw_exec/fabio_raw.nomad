@@ -4,7 +4,7 @@ job "fabio_raw" {
   type        = "system"
 
   constraint {
-    attribute = "${node.class}"
+    attribute = node.class
     value     = "lb"
   }
 

@@ -3,7 +3,7 @@ job "bar_docker" {
   type        = "service"
 
   constraint {
-    attribute = "${node.class}"
+    attribute = node.class
     value     = "worker"
   }
 

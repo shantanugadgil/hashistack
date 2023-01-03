@@ -6,7 +6,7 @@ set -u
 set -e
 
 ###############################################################################
-CONSUL_VERSION=${CONSUL_VERSION:-"1.14.0"}
+CONSUL_VERSION=${CONSUL_VERSION:-"1.14.3"}
 
 consul_config_dir="/etc/consul.d"
 consul_server_config="${consul_config_dir}/server.hcl"
@@ -16,7 +16,7 @@ consul_systemd_file="/etc/systemd/system/consul.service"
 consul_upstart_file="/etc/init/consul.conf"
 
 ###############################################################################
-NOMAD_VERSION=${NOMAD_VERSION:-"1.4.2"}
+NOMAD_VERSION=${NOMAD_VERSION:-"1.4.3"}
 
 nomad_config_dir="/etc/nomad.d"
 nomad_common_config="${nomad_config_dir}/common.hcl"

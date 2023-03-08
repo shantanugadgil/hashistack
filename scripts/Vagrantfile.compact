@@ -35,7 +35,7 @@ date > /tmp/inside.txt
 install_consul ()
 {
   # binary
-  curl -L -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
+  curl -s -Lf -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
   unzip -o consul.zip
   sudo chown root:root consul
   sudo chmod 0755 consul
@@ -43,7 +43,7 @@ install_consul ()
   rm -fv consul.zip
 
   # service file
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O ${consul_systemd_file}
+  wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O ${consul_systemd_file}
   sudo chown root:root ${consul_systemd_file}
   sudo chmod 0644 ${consul_systemd_file}
 
@@ -54,7 +54,7 @@ configure_consul_server ()
 {
   # server config
   sudo mkdir -p ${consul_config_dir}
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/server.hcl -O ${consul_server_config}
+  wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/server.hcl -O ${consul_server_config}
   sudo chown root:root ${consul_server_config}
   sudo chmod 0644 ${consul_server_config}
 
@@ -78,7 +78,7 @@ configure_consul_server ()
 install_nomad ()
 {
   # binary
-  curl -L -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
+  curl -s -Lf -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
   unzip -o nomad.zip
   sudo chown root:root nomad
   sudo chmod 0755 nomad
@@ -86,7 +86,7 @@ install_nomad ()
   rm -fv nomad.zip
 
   # service file
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O ${nomad_systemd_file}
+  wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O ${nomad_systemd_file}
   sudo chown root:root ${nomad_systemd_file}
   sudo chmod 0644      ${nomad_systemd_file}
 
@@ -97,7 +97,7 @@ configure_nomad_server ()
 {
   # server config
   sudo mkdir -p ${nomad_config_dir}
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl -O ${nomad_server_config}
+  wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/server.hcl -O ${nomad_server_config}
   sudo chown root:root ${nomad_server_config}
   sudo chmod 0644      ${nomad_server_config}
 
@@ -116,13 +116,13 @@ configure_nomad_server ()
 install_hashi_ui ()
 {
   # binary
-  curl -L -o hashi-ui https://github.com/jippi/hashi-ui/releases/download/v${HASHIUI_VERSION}/hashi-ui-linux-amd64
+  curl -s -Lf -o hashi-ui https://github.com/jippi/hashi-ui/releases/download/v${HASHIUI_VERSION}/hashi-ui-linux-amd64
   sudo chown root:root hashi-ui
   sudo chmod 0755 hashi-ui
   sudo mv -fv hashi-ui /usr/sbin/
 
   # service file
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/hashi-ui.service -O hashi-ui.service
+  wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/hashi-ui.service -O hashi-ui.service
   sudo chown root:root hashi-ui.service
   sudo mv -fv hashi-ui.service /etc/systemd/system/hashi-ui.service
 
@@ -176,7 +176,7 @@ date > /tmp/inside.txt
 install_consul ()
 {
   # binary
-  curl -L -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
+  curl -s -Lf -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
   unzip -o consul.zip
   sudo chown root:root consul
   sudo chmod 0755 consul
@@ -184,7 +184,7 @@ install_consul ()
   rm -fv consul.zip
 
   # service file
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O ${consul_systemd_file}
+  wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O ${consul_systemd_file}
   sudo chown root:root ${consul_systemd_file}
   sudo chmod 0644 ${consul_systemd_file}
 
@@ -195,7 +195,7 @@ configure_consul_client ()
 {
   # client config
   sudo mkdir -p ${consul_config_dir}
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/client.hcl -O ${consul_client_config}
+  wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/consul/client.hcl -O ${consul_client_config}
   sudo chown root:root ${consul_client_config}
   sudo chmod 0644      ${consul_client_config}
 
@@ -213,7 +213,7 @@ configure_consul_client ()
 install_nomad ()
 {
   # binary
-  curl -L -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
+  curl -s -Lf -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
   unzip -o nomad.zip
   sudo chown root:root nomad
   sudo chmod 0755 nomad
@@ -221,7 +221,7 @@ install_nomad ()
   rm -fv nomad.zip
 
   # service file
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O ${nomad_systemd_file}
+  wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O ${nomad_systemd_file}
   sudo chown root:root ${nomad_systemd_file}
   sudo chmod 0644      ${nomad_systemd_file}
 
@@ -232,7 +232,7 @@ configure_nomad_client ()
 {
   # client config
   sudo mkdir -p ${nomad_config_dir}
-  wget https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl -O ${nomad_client_config}
+  wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/config/nomad/client.hcl -O ${nomad_client_config}
   sudo chown root:root ${nomad_client_config}
   sudo chmod 0644      ${nomad_client_config}
 
@@ -250,7 +250,7 @@ configure_nomad_client ()
 install_cni_plugins ()
 {
   # binary installation
-  curl -L -o cni-plugins.tgz https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS_VERSION}/cni-plugins-linux-amd64-v${CNI_PLUGINS_VERSION}.tgz
+  curl -s -Lf -o cni-plugins.tgz https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS_VERSION}/cni-plugins-linux-amd64-v${CNI_PLUGINS_VERSION}.tgz
   sudo mkdir -p /opt/cni/bin
   sudo tar -C /opt/cni/bin -xzf cni-plugins.tgz
   rm -fv cni-plugins.tgz
@@ -340,7 +340,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         if "#{info[:class]}" == "lb"
           # eth2
-          override.vm.network "public_network", bridge: ["Qualcomm", "wlp5s0", "enp3s0"]
+          override.vm.network "public_network", bridge: ["Qualcomm", "wlp5s0", "wlp9s0", "enp3s0", "enp0s31f6"]
         end
 
         override.vm.hostname = hostname

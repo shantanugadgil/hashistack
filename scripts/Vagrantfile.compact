@@ -35,12 +35,16 @@ date > /tmp/inside.txt
 install_consul ()
 {
   # binary
-  curl -s -Lf -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
-  unzip -o consul.zip
-  sudo chown root:root consul
-  sudo chmod 0755 consul
-  sudo mv -fv consul /usr/sbin/
-  rm -fv consul.zip
+  ### curl -s -Lf -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
+  ### unzip -o consul.zip
+  ### sudo chown root:root consul
+  ### sudo chmod 0755 consul
+  ### sudo mv -fv consul /usr/sbin/
+  ### rm -fv consul.zip
+
+  sudo cp -fv /hashicorp/consul /usr/sbin/consul
+  sudo chown root:root /usr/sbin/consul
+  sudo chmod 0755 /usr/sbin/consul
 
   # service file
   wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O ${consul_systemd_file}
@@ -78,12 +82,16 @@ configure_consul_server ()
 install_nomad ()
 {
   # binary
-  curl -s -Lf -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
-  unzip -o nomad.zip
-  sudo chown root:root nomad
-  sudo chmod 0755 nomad
-  sudo mv -fv nomad /usr/sbin/
-  rm -fv nomad.zip
+  ### curl -s -Lf -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
+  ### unzip -o nomad.zip
+  ### sudo chown root:root nomad
+  ### sudo chmod 0755 nomad
+  ### sudo mv -fv nomad /usr/sbin/
+  ### rm -fv nomad.zip
+
+  sudo cp -fv /hashicorp/nomad /usr/sbin/nomad
+  sudo chown root:root /usr/sbin/nomad
+  sudo chmod 0755 /usr/sbin/nomad
 
   # service file
   wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O ${nomad_systemd_file}
@@ -176,12 +184,16 @@ date > /tmp/inside.txt
 install_consul ()
 {
   # binary
-  curl -s -Lf -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
-  unzip -o consul.zip
-  sudo chown root:root consul
-  sudo chmod 0755 consul
-  sudo mv -fv consul /usr/sbin/
-  rm -fv consul.zip
+  ### curl -s -Lf -o consul.zip https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
+  ### unzip -o consul.zip
+  ### sudo chown root:root consul
+  ### sudo chmod 0755 consul
+  ### sudo mv -fv consul /usr/sbin/
+  ### rm -fv consul.zip
+
+  sudo cp -fv /hashicorp/consul /usr/sbin/consul
+  sudo chown root:root /usr/sbin/consul
+  sudo chmod 0755 /usr/sbin/consul
 
   # service file
   wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/consul.service -O ${consul_systemd_file}
@@ -213,12 +225,16 @@ configure_consul_client ()
 install_nomad ()
 {
   # binary
-  curl -s -Lf -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
-  unzip -o nomad.zip
-  sudo chown root:root nomad
-  sudo chmod 0755 nomad
-  sudo mv -fv nomad /usr/sbin/
-  rm -fv nomad.zip
+  ### curl -s -Lf -o nomad.zip https://releases.hashicorp.com/nomad/${NOMAD_VERSION}/nomad_${NOMAD_VERSION}_linux_amd64.zip
+  ### unzip -o nomad.zip
+  ### sudo chown root:root nomad
+  ### sudo chmod 0755 nomad
+  ### sudo mv -fv nomad /usr/sbin/
+  ### rm -fv nomad.zip
+
+  sudo cp -fv /hashicorp/nomad /usr/sbin/nomad
+  sudo chown root:root /usr/sbin/nomad
+  sudo chmod 0755 /usr/sbin/nomad
 
   # service file
   wget --no-verbose https://raw.githubusercontent.com/shantanugadgil/hashistack/master/systemd/nomad.service -O ${nomad_systemd_file}
@@ -266,7 +282,7 @@ configure_consul_client
 install_nomad
 configure_nomad_client
 
-install_cni_plugins
+#install_cni_plugins
 
 sudo systemctl daemon-reload
 sudo systemctl enable consul nomad

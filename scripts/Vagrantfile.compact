@@ -321,6 +321,8 @@ cluster = {
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "shantanug/centos-7-docker"
+  config.vm.boot_timeout = 300
+
   #config.vm.box_version = "0.0.3"
 
   cluster.each_with_index do |(hostname, info), index|

@@ -68,6 +68,7 @@ configure_consul_server ()
   sed -i "s/@@NODE_NAME@@/${node_name}/g"           ${consul_server_config}
   sed -i "s|@@CONSUL_KEY@@|${CONSUL_KEY}|g"         ${consul_server_config}
   sed -i "s/@@SRV_IP_ADDRESS@@/${consul_address}/g" ${consul_server_config}
+  sed -i "s/@@DATACENTER@@/dc1/g"                   ${consul_server_config}
 
   set +x
 
@@ -107,6 +108,7 @@ configure_nomad_server ()
   sed -i "s|@@NOMAD_KEY@@|${NOMAD_KEY}|g"          ${nomad_server_config}
   sed -i "s/@@SRV_IP_ADDRESS@@/${nomad_address}/g" ${nomad_server_config}
   sed -i "s/@@NODE_NAME@@/${node_name}/g"          ${nomad_server_config}
+  sed -i "s/@@DATACENTER@@/dc1/g"                  ${nomad_server_config}
 
   return 0
 }

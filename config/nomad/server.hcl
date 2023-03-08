@@ -3,7 +3,7 @@
 
 bind_addr = "0.0.0.0"
 
-datacenter = "dc1"
+datacenter = "@@DATACENTER@@"
 
 data_dir = "/var/lib/nomad"
 
@@ -43,6 +43,6 @@ server {
 
   server_join {
     retry_join = ["@@SRV_IP_ADDRESS@@"]
-    retry_max = 0
+    retry_max  = 0
   }
 }

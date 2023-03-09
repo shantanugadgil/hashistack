@@ -6,7 +6,7 @@ VAGRANTFILE_API_VERSION = "2"
 $install_server = <<-EOT1
 #!/bin/bash
 
-set -u
+set -ue
 
 CONSUL_VERSION=${CONSUL_VERSION:-"1.15.1"}
 CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
@@ -157,7 +157,7 @@ EOT1
 $install_client = <<-EOT2
 #!/bin/bash
 
-set -u
+set -uex
 
 CONSUL_VERSION=${CONSUL_VERSION:-"1.15.1"}
 CONSUL_KEY="4kJr1lG9zcN5pkHf1qzB03XM1XFxFKeT6kz4XLbP0V4="
@@ -362,8 +362,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         override.vm.hostname = hostname
 
         # TODO: this is a WIP; to avoid downloading the binaries (speedup)
-        config.vm.synced_folder "hashicorp/", "/hashicorp",
-          owner: "root", group: "root"
+        config.vm.synced_folder "hashicorp/", "/hashicorp", :create => true, owner: "root", group: "root"
 
         vb.name = hostname
         vb.customize ["modifyvm", :id, "--memory", info[:mem], "--cpus", info[:cpus], "--hwvirtex", "on"]

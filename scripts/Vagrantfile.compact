@@ -366,6 +366,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         vb.name = hostname
         vb.customize ["modifyvm", :id, "--memory", info[:mem], "--cpus", info[:cpus], "--hwvirtex", "on"]
+        vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
 
         #if "#{info[:class]}" == "worker"
         #  override.vm.provision :shell, inline: $install_common_after

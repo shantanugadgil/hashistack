@@ -17,7 +17,7 @@ consul_config_dir="/etc/consul.d"
 consul_server_config="${consul_config_dir}/server.hcl"
 consul_client_config="${consul_config_dir}/client.hcl"
 
-NOMAD_VERSION=${NOMAD_VERSION:-"1.5.0"}
+NOMAD_VERSION=${NOMAD_VERSION:-"1.5.1"}
 NOMAD_KEY="R84JM/rVST6LnLx3pQnPAlQkMg5DIVG6ys+bUaHjayA="
 
 nomad_systemd_file="/etc/systemd/system/nomad.service"

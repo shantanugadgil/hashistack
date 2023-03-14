@@ -329,9 +329,9 @@ EOT4
 cluster = {
   "zsrv1" =>    { :script => $install_server, :ip => "10.11.12.11", :cpus => 2, :mem => 1024, :class => "server" },
   "zlb1" =>     { :script => $install_client, :ip => "10.11.12.101", :cpus => 2, :mem => 1024, :class => "lb" },
-  "zclient1" => { :script => $install_client, :ip => "10.11.12.102", :cpus => 2, :mem => 2048, :class => "worker" },
-  "zclient2" => { :script => $install_client, :ip => "10.11.12.103", :cpus => 2, :mem => 2048, :class => "worker" },
-  "zclient3" => { :script => $install_client, :ip => "10.11.12.104", :cpus => 2, :mem => 2048, :class => "worker" },
+  "zclient1" => { :script => $install_client, :ip => "10.11.12.102", :cpus => 2, :mem => 1024, :class => "worker" },
+  "zclient2" => { :script => $install_client, :ip => "10.11.12.103", :cpus => 2, :mem => 1024, :class => "worker" },
+  "zclient3" => { :script => $install_client, :ip => "10.11.12.104", :cpus => 2, :mem => 1024, :class => "worker" },
 }
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|

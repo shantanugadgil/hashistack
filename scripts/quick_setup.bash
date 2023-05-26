@@ -16,7 +16,7 @@ consul_systemd_file="/etc/systemd/system/consul.service"
 consul_upstart_file="/etc/init/consul.conf"
 
 ###############################################################################
-NOMAD_VERSION=${NOMAD_VERSION:-"1.5.5"}
+NOMAD_VERSION=${NOMAD_VERSION:-"1.5.6"}
 
 nomad_config_dir="/etc/nomad.d"
 nomad_common_config="${nomad_config_dir}/common.hcl"
